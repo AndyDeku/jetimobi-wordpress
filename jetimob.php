@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * Plugin Name: Jetimob
  * Version: 3.1.4
@@ -10,55 +10,57 @@
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  * GitHub Plugin URI: https://github.com/AndyDeku/jetimobi-wordpress
-*/
+ */
 //register_activation_hook( __FILE__, array( 'Jetimob', 'activate' ) );
 
 /**
-  * Plugin Activation hook function to check for Minimum PHP and WordPress versions
-  * @param string $wp Minimum version of WordPress required for this plugin
-  * @param string $php Minimum version of PHP required for this plugin
-  */
- function activate( $wp = '4.8', $php = '7.2.24' ) {
-    global $wp_version;
-    if ( version_compare( PHP_VERSION, $php, '<' ) )
-        $flag = 'PHP';
-    elseif
-        ( version_compare( $wp_version, $wp, '<' ) )
-        $flag = 'WordPress';
-    else
-        return;
-    $version = 'PHP' == $flag ? $php : $wp;
-    deactivate_plugins( basename( __FILE__ ) );
-    wp_die('<p>O plugin <strong>Jetimob/strong> requer '.$flag.'  versão '.$version.' ou superior.</p>','Plugin Activation Error',  array( 'response'=>200, 'back_link'=>TRUE ) );
+ * Plugin Activation hook function to check for Minimum PHP and WordPress versions
+ * @param string $wp Minimum version of WordPress required for this plugin
+ * @param string $php Minimum version of PHP required for this plugin
+ */
+function activate($wp = '4.8', $php = '7.2.24')
+{
+	global $wp_version;
+	if (version_compare(PHP_VERSION, $php, '<'))
+		$flag = 'PHP';
+	elseif
+	(version_compare($wp_version, $wp, '<'))
+		$flag = 'WordPress';
+	else
+		return;
+	$version = 'PHP' == $flag ? $php : $wp;
+	deactivate_plugins(basename(__FILE__));
+	wp_die('<p>O plugin <strong>Jetimob/strong> requer ' . $flag . '  versão ' . $version . ' ou superior.</p>', 'Plugin Activation Error', array('response' => 200, 'back_link' => TRUE));
 }
-	// Adiciona shortcode [lista_imoveis]
-function shortcode_lista_imoveis($atts) {
-    ob_start();
+// Adiciona shortcode [lista_imoveis]
+function shortcode_lista_imoveis($atts)
+{
+	ob_start();
 
-    $query = new WP_Query([
-        'post_type' => 'imoveis',
-        'posts_per_page' => 10
-    ]);
+	$query = new WP_Query([
+		'post_type' => 'imoveis',
+		'posts_per_page' => 10
+	]);
 
-    if ($query->have_posts()) {
-        echo '<div class="lista-imoveis">';
-        while ($query->have_posts()) {
-            $query->the_post();
-            echo '<div class="item-imovel">';
-            echo '<h2><a href="'.get_permalink().'">'.get_the_title().'</a></h2>';
-            if (has_post_thumbnail()) {
-                the_post_thumbnail('medium');
-            }
-            echo '<div class="desc">'.get_the_excerpt().'</div>';
-            echo '</div>';
-        }
-        echo '</div>';
-    } else {
-        echo '<p>Nenhum imóvel encontrado.</p>';
-    }
+	if ($query->have_posts()) {
+		echo '<div class="lista-imoveis">';
+		while ($query->have_posts()) {
+			$query->the_post();
+			echo '<div class="item-imovel">';
+			echo '<h2><a href="' . get_permalink() . '">' . get_the_title() . '</a></h2>';
+			if (has_post_thumbnail()) {
+				the_post_thumbnail('medium');
+			}
+			echo '<div class="desc">' . get_the_excerpt() . '</div>';
+			echo '</div>';
+		}
+		echo '</div>';
+	} else {
+		echo '<p>Nenhum imóvel encontrado.</p>';
+	}
 
-    wp_reset_postdata();
-    return ob_get_clean();
+	wp_reset_postdata();
+	return ob_get_clean();
 }
 add_shortcode('lista_imoveis', 'shortcode_lista_imoveis');
 /**
@@ -71,28 +73,32 @@ add_shortcode('lista_imoveis', 'shortcode_lista_imoveis');
  * at http://jeremyhixon.com/wp-tools/option-page/
  */
 
-class Jetimob {
+class Jetimob
+{
 	private $jetimob_options;
 
-	public function __construct() {
-		add_action( 'admin_menu', array( $this, 'jetimob_add_plugin_page' ) );
-		add_action( 'admin_init', array( $this, 'jetimob_page_init' ) );
+	public function __construct()
+	{
+		add_action('admin_menu', array($this, 'jetimob_add_plugin_page'));
+		add_action('admin_init', array($this, 'jetimob_page_init'));
 	}
 
-	public function jetimob_add_plugin_page() {
+	public function jetimob_add_plugin_page()
+	{
 		add_menu_page(
 			'Jetimob', // page_title
 			'Jetimob', // menu_title
 			'manage_options', // capability
 			'jetimob', // menu_slug
-			array( $this, 'jetimob_create_admin_page' ), // function
+			array($this, 'jetimob_create_admin_page'), // function
 			'dashicons-building', // icon_url
 			100 // position
 		);
 	}
 
-	public function jetimob_create_admin_page() {
-		$this->jetimob_options = get_option( 'jetimob_option_name' ); ?>
+	public function jetimob_create_admin_page()
+	{
+		$this->jetimob_options = get_option('jetimob_option_name'); ?>
 
 		<div class="wrap">
 			<h2>Jetimob</h2>
@@ -101,33 +107,34 @@ class Jetimob {
 
 			<form method="post" action="options.php">
 				<?php
-					settings_fields( 'jetimob_option_group' );
-					do_settings_sections( 'jetimob-admin' );
-					submit_button();
+				settings_fields('jetimob_option_group');
+				do_settings_sections('jetimob-admin');
+				submit_button();
 				?>
 			</form>
 		</div>
 	<?php }
 
 
-	public function jetimob_page_init() {
+	public function jetimob_page_init()
+	{
 		register_setting(
 			'jetimob_option_group', // option_group
 			'jetimob_option_name', // option_name
-			array( $this, 'jetimob_sanitize' ) // sanitize_callback
+			array($this, 'jetimob_sanitize') // sanitize_callback
 		);
 
 		add_settings_section(
 			'jetimob_setting_section', // id
 			'Settings', // title
-			array( $this, 'jetimob_section_info' ), // callback
+			array($this, 'jetimob_section_info'), // callback
 			'jetimob-admin' // page
 		);
 
 		add_settings_field(
 			'api', // id
 			'API', // title
-			array( $this, 'api_callback' ), // callback
+			array($this, 'api_callback'), // callback
 			'jetimob-admin', // page
 			'jetimob_setting_section' // section
 		);
@@ -135,130 +142,136 @@ class Jetimob {
 		add_settings_field(
 			'gmaps', // id
 			'Chave de API Google Maps', // title
-			array( $this, 'gmaps_callback' ), // callback
+			array($this, 'gmaps_callback'), // callback
 			'jetimob-admin', // page
 			'jetimob_setting_section' // section
 		);
 
 	}
 
-	public function jetimob_sanitize($input) {
+	public function jetimob_sanitize($input)
+	{
 		$sanitary_values = array();
-		if ( isset( $input['api'] ) ) {
-			$sanitary_values['api'] = sanitize_text_field( $input['api'] );
+		if (isset($input['api'])) {
+			$sanitary_values['api'] = sanitize_text_field($input['api']);
 		}
-		if ( isset( $input['gmaps'] ) ) {
-			$sanitary_values['gmaps'] = sanitize_text_field( $input['gmaps'] );
+		if (isset($input['gmaps'])) {
+			$sanitary_values['gmaps'] = sanitize_text_field($input['gmaps']);
 		}
 
 		return $sanitary_values;
 	}
 
-	public function jetimob_section_info() {
-		
+	public function jetimob_section_info()
+	{
+
 	}
 
-	public function api_callback() {
+	public function api_callback()
+	{
 		printf(
 			'<input class="regular-text" type="text" name="jetimob_option_name[api]" id="api" value="%s">',
-			isset( $this->jetimob_options['api'] ) ? esc_attr( $this->jetimob_options['api']) : ''
+			isset($this->jetimob_options['api']) ? esc_attr($this->jetimob_options['api']) : ''
 		);
 	}
 
-	public function gmaps_callback() {
+	public function gmaps_callback()
+	{
 		printf(
 			'<input class="regular-text" type="text" name="jetimob_option_name[gmaps]" id="gmaps" value="%s">',
-			isset( $this->jetimob_options['gmaps'] ) ? esc_attr( $this->jetimob_options['gmaps']) : ''
+			isset($this->jetimob_options['gmaps']) ? esc_attr($this->jetimob_options['gmaps']) : ''
 		);
 	}
 
-	public function theme_callback() {
-	
+	public function theme_callback()
+	{
+
 	}
 
 }
-if ( is_admin() )
+if (is_admin())
 	$jetimob = new Jetimob();
 
 
-require_once dirname( __FILE__ ) . '/tgmpa/class-tgm-plugin-activation.php';
+require_once dirname(__FILE__) . '/tgmpa/class-tgm-plugin-activation.php';
 
-add_action( 'tgmpa_register', 'jetimob_register_required_plugins' );
+add_action('tgmpa_register', 'jetimob_register_required_plugins');
 
-function jetimob_register_required_plugins() {
+function jetimob_register_required_plugins()
+{
 
 	$plugins = array(
 		array(
-				'name'      => 'Featured Image from URL',
-				'slug'      => 'featured-image-from-url',
-				'required'  => false,
-			),
+			'name' => 'Featured Image from URL',
+			'slug' => 'featured-image-from-url',
+			'required' => false,
+		),
 		array(
-				'name'      => 'Font Awesome',
-				'slug'      => 'font-awesome',
-				'required'  => false,
-			),
+			'name' => 'Font Awesome',
+			'slug' => 'font-awesome',
+			'required' => false,
+		),
 		array(
-				'name'      => 'Search & Filter Pro',
-				'slug'		=> 'search-filter-pro',
-				'source'      => dirname( __FILE__ ).'/addon/search-filter-pro.zip',
-				'required'  => false,
-			),
+			'name' => 'Search & Filter Pro',
+			'slug' => 'search-filter-pro',
+			'source' => dirname(__FILE__) . '/addon/search-filter-pro.zip',
+			'required' => false,
+		),
 		array(
-				'name'      => 'Github Updater',
-				'slug'		=> 'github-updater',
-				'source'      => 'https://codeload.github.com/afragen/github-updater/zip/master',
-				'required'  => false,
-			),
-		
+			'name' => 'Github Updater',
+			'slug' => 'github-updater',
+			'source' => 'https://codeload.github.com/afragen/github-updater/zip/master',
+			'required' => false,
+		),
+
 	);
 
-		$config = array(
-		'id'           => 'jetimob',                 // Unique ID for hashing notices for multiple instances of TGMPA.
+	$config = array(
+		'id' => 'jetimob',                 // Unique ID for hashing notices for multiple instances of TGMPA.
 		'default_path' => '',                      // Default absolute path to bundled plugins.
-		'menu'         => 'tgmpa-install-plugins', // Menu slug.
-		'parent_slug'  => 'plugins.php',            // Parent menu slug.
-		'capability'   => 'manage_options',    // Capability needed to view plugin install page, should be a capability associated with the parent menu used.
-		'has_notices'  => true,                    // Show admin notices or not.
-		'dismissable'  => true,                    // If false, a user cannot dismiss the nag message.
-		'dismiss_msg'  => '',                      // If 'dismissable' is false, this message will be output at top of nag.
+		'menu' => 'tgmpa-install-plugins', // Menu slug.
+		'parent_slug' => 'plugins.php',            // Parent menu slug.
+		'capability' => 'manage_options',    // Capability needed to view plugin install page, should be a capability associated with the parent menu used.
+		'has_notices' => true,                    // Show admin notices or not.
+		'dismissable' => true,                    // If false, a user cannot dismiss the nag message.
+		'dismiss_msg' => '',                      // If 'dismissable' is false, this message will be output at top of nag.
 		'is_automatic' => false,                   // Automatically activate plugins after installation or not.
-		'message'      => '',                      // Message to output right before the plugins table.
+		'message' => '',                      // Message to output right before the plugins table.
 
-		
-		'strings'      => array(
-			'page_title'                      => __( 'Install Required Plugins', 'jetimob' ),
-			'menu_title'                      => __( 'Install Plugins', 'jetimob' ),
+
+		'strings' => array(
+			'page_title' => __('Install Required Plugins', 'jetimob'),
+			'menu_title' => __('Install Plugins', 'jetimob'),
 			/* translators: %s: plugin name. */
-			'installing'                      => __( 'Installing Plugin: %s', 'jetimob' ),
+			'installing' => __('Installing Plugin: %s', 'jetimob'),
 			/* translators: %s: plugin name. */
-			'updating'                        => __( 'Updating Plugin: %s', 'jetimob' ),
-			'oops'                            => __( 'Something went wrong with the plugin API.', 'jetimob' ),
-			'notice_can_install_required'     => _n_noop(
+			'updating' => __('Updating Plugin: %s', 'jetimob'),
+			'oops' => __('Something went wrong with the plugin API.', 'jetimob'),
+			'notice_can_install_required' => _n_noop(
 				/* translators: 1: plugin name(s). */
 				'This theme requires the following plugin: %1$s.',
 				'This theme requires the following plugins: %1$s.',
 				'jetimob'
 			),
-			'notice_can_install_recommended'  => _n_noop(
+			'notice_can_install_recommended' => _n_noop(
 				/* translators: 1: plugin name(s). */
 				'This theme recommends the following plugin: %1$s.',
 				'This theme recommends the following plugins: %1$s.',
 				'jetimob'
 			),
-			'notice_ask_to_update'            => _n_noop(
+			'notice_ask_to_update' => _n_noop(
 				/* translators: 1: plugin name(s). */
 				'The following plugin needs to be updated to its latest version to ensure maximum compatibility with this theme: %1$s.',
 				'The following plugins need to be updated to their latest version to ensure maximum compatibility with this theme: %1$s.',
 				'jetimob'
 			),
-			'notice_ask_to_update_maybe'      => _n_noop(
+			'notice_ask_to_update_maybe' => _n_noop(
 				/* translators: 1: plugin name(s). */
 				'There is an update available for: %1$s.',
 				'There are updates available for the following plugins: %1$s.',
 				'jetimob'
 			),
-			'notice_can_activate_required'    => _n_noop(
+			'notice_can_activate_required' => _n_noop(
 				/* translators: 1: plugin name(s). */
 				'The following required plugin is currently inactive: %1$s.',
 				'The following required plugins are currently inactive: %1$s.',
@@ -270,326 +283,337 @@ function jetimob_register_required_plugins() {
 				'The following recommended plugins are currently inactive: %1$s.',
 				'jetimob'
 			),
-			'install_link'                    => _n_noop(
+			'install_link' => _n_noop(
 				'Begin installing plugin',
 				'Begin installing plugins',
 				'jetimob'
 			),
-			'update_link' 					  => _n_noop(
+			'update_link' => _n_noop(
 				'Begin updating plugin',
 				'Begin updating plugins',
 				'jetimob'
 			),
-			'activate_link'                   => _n_noop(
+			'activate_link' => _n_noop(
 				'Begin activating plugin',
 				'Begin activating plugins',
 				'jetimob'
 			),
-			'return'                          => __( 'Return to Required Plugins Installer', 'jetimob' ),
-			'plugin_activated'                => __( 'Plugin activated successfully.', 'jetimob' ),
-			'activated_successfully'          => __( 'The following plugin was activated successfully:', 'jetimob' ),
+			'return' => __('Return to Required Plugins Installer', 'jetimob'),
+			'plugin_activated' => __('Plugin activated successfully.', 'jetimob'),
+			'activated_successfully' => __('The following plugin was activated successfully:', 'jetimob'),
 			/* translators: 1: plugin name. */
-			'plugin_already_active'           => __( 'No action taken. Plugin %1$s was already active.', 'jetimob' ),
+			'plugin_already_active' => __('No action taken. Plugin %1$s was already active.', 'jetimob'),
 			/* translators: 1: plugin name. */
-			'plugin_needs_higher_version'     => __( 'Plugin not activated. A higher version of %s is needed for this theme. Please update the plugin.', 'jetimob' ),
+			'plugin_needs_higher_version' => __('Plugin not activated. A higher version of %s is needed for this theme. Please update the plugin.', 'jetimob'),
 			/* translators: 1: dashboard link. */
-			'complete'                        => __( 'All plugins installed and activated successfully. %1$s', 'jetimob' ),
-			'dismiss'                         => __( 'Dismiss this notice', 'jetimob' ),
-			'notice_cannot_install_activate'  => __( 'There are one or more required or recommended plugins to install, update or activate.', 'jetimob' ),
-			'contact_admin'                   => __( 'Please contact the administrator of this site for help.', 'jetimob' ),
+			'complete' => __('All plugins installed and activated successfully. %1$s', 'jetimob'),
+			'dismiss' => __('Dismiss this notice', 'jetimob'),
+			'notice_cannot_install_activate' => __('There are one or more required or recommended plugins to install, update or activate.', 'jetimob'),
+			'contact_admin' => __('Please contact the administrator of this site for help.', 'jetimob'),
 
-			'nag_type'                        => '', // Determines admin notice type - can only be one of the typical WP notice classes, such as 'updated', 'update-nag', 'notice-warning', 'notice-info' or 'error'. Some of which may not work as expected in older WP versions.
+			'nag_type' => '', // Determines admin notice type - can only be one of the typical WP notice classes, such as 'updated', 'update-nag', 'notice-warning', 'notice-info' or 'error'. Some of which may not work as expected in older WP versions.
 		),
-			
+
 	);
 
-	tgmpa( $plugins, $config );
+	tgmpa($plugins, $config);
 }
 //captação de Leads para o plugin Gravity Forms
 add_action("gform_post_submission", "set_post_content", 10, 2);
- function set_post_content($entry, $form){
-	 $message = print_r($entry, true);
-	 $message = wordwrap($message, 70);
+function set_post_content($entry, $form)
+{
+	$message = print_r($entry, true);
+	$message = wordwrap($message, 70);
 
-	if($form["id"] == 1) { //substitua pelo ID do formulário
-	 $data = array(
-	'source' => 'site', //não alterar
-	'full_name' => $entry["6"], //substituir pelo ID do campo correto
-	'email' => $entry["7"], //substituir pelo ID do campo correto
-	'country_code' => '55',
-	'phone' => preg_replace("/[^0-9,.]/", "", $entry["10"] ), //substituir pelo ID do campo correto
-	'message' => $entry["5"].'<br>'.$entry['source_url'], //substituir pelo ID do campo correto, não alterar o valor de 'entry_url' para obter a origem do formulário
-	'sended_at' => $entry["date_created"],	//não alterar
-	 );
+	if ($form["id"] == 1) { //substitua pelo ID do formulário
+		$data = array(
+			'source' => 'site', //não alterar
+			'full_name' => $entry["6"], //substituir pelo ID do campo correto
+			'email' => $entry["7"], //substituir pelo ID do campo correto
+			'country_code' => '55',
+			'phone' => preg_replace("/[^0-9,.]/", "", $entry["10"]), //substituir pelo ID do campo correto
+			'message' => $entry["5"] . '<br>' . $entry['source_url'], //substituir pelo ID do campo correto, não alterar o valor de 'entry_url' para obter a origem do formulário
+			'sended_at' => $entry["date_created"],	//não alterar
+		);
 	}
 
-	$jetimob_options = get_option( 'jetimob_option_name' ); 
+	$jetimob_options = get_option('jetimob_option_name');
 	$api = $jetimob_options['api'];
 
-	$ch = curl_init();					
+	$ch = curl_init();
 
 	$datajson = json_encode($data);
 
-	$headers = array( 
-		'Content-Type: application/json',  
+	$headers = array(
+		'Content-Type: application/json',
 		//'Authorization-Key: '. $chaveprivada .'',
-		);
+	);
 	$curl_function = curl_setopt_array(
-	    $ch, array( 
-	    CURLOPT_URL => 'https://www.jetimob.com/api/'.$api.'/leads',
-	    CURLOPT_CUSTOMREQUEST => 'POST',
-	    CURLOPT_POSTFIELDS => $datajson, 
-	    CURLOPT_HTTPHEADER => $headers,
-	    CURLOPT_RETURNTRANSFER => true,
+		$ch,
+		array(
+			CURLOPT_URL => 'https://www.jetimob.com/api/' . $api . '/leads',
+			CURLOPT_CUSTOMREQUEST => 'POST',
+			CURLOPT_POSTFIELDS => $datajson,
+			CURLOPT_HTTPHEADER => $headers,
+			CURLOPT_RETURNTRANSFER => true,
 
-	));
+		)
+	);
 
 	$output = curl_exec($ch);
 
 	if (!$output) {
-	    echo 'Ocorreu um erro: ' . curl_error($ch);
+		echo 'Ocorreu um erro: ' . curl_error($ch);
 	}
 }
 
-if ( ! function_exists('custom_post_type_imovel') ) {
+if (!function_exists('custom_post_type_imovel')) {
 
 	add_theme_support('post-thumbnails');
-	add_post_type_support( 'imovel', 'thumbnail' );  
+	add_post_type_support('imovel', 'thumbnail');
 	// Register Custom Post Type
-	function custom_post_type_imovel() {
+	function custom_post_type_imovel()
+	{
 
 		$labels = array(
-			'name'                  => _x( 'Imóveis', 'Post Type General Name', 'text_domain' ),
-			'singular_name'         => _x( 'Imóvel', 'Post Type Singular Name', 'text_domain' ),
-			'menu_name'             => __( 'Imóveis', 'text_domain' ),
-			'name_admin_bar'        => __( 'Imóveis', 'text_domain' ),
+			'name' => _x('Imóveis', 'Post Type General Name', 'text_domain'),
+			'singular_name' => _x('Imóvel', 'Post Type Singular Name', 'text_domain'),
+			'menu_name' => __('Imóveis', 'text_domain'),
+			'name_admin_bar' => __('Imóveis', 'text_domain'),
 
 		);
 		$args = array(
-			'label'                 => __( 'Imóvel', 'text_domain' ),
-			'description'           => __( 'Post Type Description', 'text_domain' ),
-			'labels'                => $labels,
-			'supports'              => array( 'title', 'editor', 'custom-fields', 'thumbnail' ),
-			'hierarchical'          => false,
-			'public'                => true,
-			'show_ui'               => true,
-			'show_in_menu'          => true,
-			'menu_position'         => 5,
-			'show_in_admin_bar'     => true,
-			'show_in_nav_menus'     => true,
-			'can_export'            => false,
-			'has_archive'           => true,
-			'exclude_from_search'   => false,
-			'publicly_queryable'    => true,
-			'rewrite'				=> true,
-			'capability_type'		=> 'post'
+			'label' => __('Imóvel', 'text_domain'),
+			'description' => __('Post Type Description', 'text_domain'),
+			'labels' => $labels,
+			'supports' => array('title', 'editor', 'custom-fields', 'thumbnail'),
+			'hierarchical' => false,
+			'public' => true,
+			'show_ui' => true,
+			'show_in_menu' => true,
+			'menu_position' => 5,
+			'show_in_admin_bar' => true,
+			'show_in_nav_menus' => true,
+			'can_export' => false,
+			'has_archive' => true,
+			'exclude_from_search' => false,
+			'publicly_queryable' => true,
+			'rewrite' => true,
+			'capability_type' => 'post'
 		);
-		register_post_type( 'imovel', $args );
+		register_post_type('imovel', $args);
 
 	}
-	add_action( 'init', 'custom_post_type_imovel', 0 );
+	add_action('init', 'custom_post_type_imovel', 0);
 }
 
-if ( ! function_exists( 'custom_taxonomy_tipoimovel' ) ) {
+if (!function_exists('custom_taxonomy_tipoimovel')) {
 	// Register Custom Taxonomy
-	function custom_taxonomy_tipoimovel() {
+	function custom_taxonomy_tipoimovel()
+	{
 
 		$labels = array(
-			'name'                       => _x( 'Tipos Imóvel', 'Taxonomy General Name', 'text_domain' ),
-			'singular_name'              => _x( 'Tipo Imóvel', 'Taxonomy Singular Name', 'text_domain' ),
-			'menu_name'                  => __( 'Tipos de Imóvel', 'text_domain' ),
-			'all_items'                  => __( 'Todos', 'text_domain' ),
-			'parent_item'                => __( 'Item ascendente', 'text_domain' ),
-			'parent_item_colon'          => __( 'Item ascendente:', 'text_domain' ),
-			'new_item_name'              => __( 'Novo tipo', 'text_domain' ),
-			'add_new_item'               => __( 'Adicionar tipo', 'text_domain' ),
-			'edit_item'                  => __( 'Editar tipo', 'text_domain' ),
-			'update_item'                => __( 'Atualizar tipo', 'text_domain' ),
-			'view_item'                  => __( 'Ver item', 'text_domain' ),
-			'separate_items_with_commas' => __( 'Separe os itens com virgulas', 'text_domain' ),
-			'add_or_remove_items'        => __( 'Adicione ou remova itens', 'text_domain' ),
-			'choose_from_most_used'      => __( 'Escolha entre os mais utilizados', 'text_domain' ),
-			'popular_items'              => __( 'Itens populares', 'text_domain' ),
-			'search_items'               => __( 'Pesquisar', 'text_domain' ),
-			'not_found'                  => __( 'Nada encontrado', 'text_domain' ),
-			'no_terms'                   => __( 'Sem itens', 'text_domain' ),
-			'items_list'                 => __( 'Lista de itens', 'text_domain' ),
-			'items_list_navigation'      => __( 'Navegar nos itens', 'text_domain' ),
+			'name' => _x('Tipos Imóvel', 'Taxonomy General Name', 'text_domain'),
+			'singular_name' => _x('Tipo Imóvel', 'Taxonomy Singular Name', 'text_domain'),
+			'menu_name' => __('Tipos de Imóvel', 'text_domain'),
+			'all_items' => __('Todos', 'text_domain'),
+			'parent_item' => __('Item ascendente', 'text_domain'),
+			'parent_item_colon' => __('Item ascendente:', 'text_domain'),
+			'new_item_name' => __('Novo tipo', 'text_domain'),
+			'add_new_item' => __('Adicionar tipo', 'text_domain'),
+			'edit_item' => __('Editar tipo', 'text_domain'),
+			'update_item' => __('Atualizar tipo', 'text_domain'),
+			'view_item' => __('Ver item', 'text_domain'),
+			'separate_items_with_commas' => __('Separe os itens com virgulas', 'text_domain'),
+			'add_or_remove_items' => __('Adicione ou remova itens', 'text_domain'),
+			'choose_from_most_used' => __('Escolha entre os mais utilizados', 'text_domain'),
+			'popular_items' => __('Itens populares', 'text_domain'),
+			'search_items' => __('Pesquisar', 'text_domain'),
+			'not_found' => __('Nada encontrado', 'text_domain'),
+			'no_terms' => __('Sem itens', 'text_domain'),
+			'items_list' => __('Lista de itens', 'text_domain'),
+			'items_list_navigation' => __('Navegar nos itens', 'text_domain'),
 		);
 		$args = array(
-			'labels'                     => $labels,
-			'hierarchical'               => true,
-			'public'                     => true,
-			'show_ui'                    => true,
-			'show_admin_column'          => false,
-			'show_in_nav_menus'          => false,
-			'show_tagcloud'              => false,
+			'labels' => $labels,
+			'hierarchical' => true,
+			'public' => true,
+			'show_ui' => true,
+			'show_admin_column' => false,
+			'show_in_nav_menus' => false,
+			'show_tagcloud' => false,
 		);
-		register_taxonomy( 'tipo_imovel', array( 'imovel' ), $args );
+		register_taxonomy('tipo_imovel', array('imovel'), $args);
 
 	}
-	add_action( 'init', 'custom_taxonomy_tipoimovel', 0 );
+	add_action('init', 'custom_taxonomy_tipoimovel', 0);
 }
 
-if ( ! function_exists( 'custom_taxonomy_comodidadesimovel' ) ) {
+if (!function_exists('custom_taxonomy_comodidadesimovel')) {
 	// Register Custom Taxonomy
-	function custom_taxonomy_comodidadesimovel() {
+	function custom_taxonomy_comodidadesimovel()
+	{
 
 		$labels = array(
-			'name'                       => _x( 'Comodidades Imóvel', 'Taxonomy General Name', 'text_domain' ),
-			'singular_name'              => _x( 'Comodidade Imóvel', 'Taxonomy Singular Name', 'text_domain' ),
-			'menu_name'                  => __( 'Comodidades Imóveis', 'text_domain' ),
-			'all_items'                  => __( 'Todos', 'text_domain' ),
-			'parent_item'                => __( 'Pai', 'text_domain' ),
-			'parent_item_colon'          => __( 'Pai:', 'text_domain' ),
-			'new_item_name'              => __( 'Novo', 'text_domain' ),
-			'add_new_item'               => __( 'Adicionar', 'text_domain' ),
-			'edit_item'                  => __( 'Editar', 'text_domain' ),
-			'update_item'                => __( 'Atualizar', 'text_domain' ),
-			'view_item'                  => __( 'Ver item', 'text_domain' ),
-			'separate_items_with_commas' => __( 'Separe os itens com virgulas', 'text_domain' ),
-			'add_or_remove_items'        => __( 'Adicione ou remova itens', 'text_domain' ),
-			'choose_from_most_used'      => __( 'Escolha entre os mais utilizados', 'text_domain' ),
-			'popular_items'              => __( 'Itens populares', 'text_domain' ),
-			'search_items'               => __( 'Pesquisar', 'text_domain' ),
-			'not_found'                  => __( 'Nada encontrado', 'text_domain' ),
-			'no_terms'                   => __( 'Sem itens', 'text_domain' ),
-			'items_list'                 => __( 'Lista de itens', 'text_domain' ),
-			'items_list_navigation'      => __( 'Navegar nos itens', 'text_domain' ),
+			'name' => _x('Comodidades Imóvel', 'Taxonomy General Name', 'text_domain'),
+			'singular_name' => _x('Comodidade Imóvel', 'Taxonomy Singular Name', 'text_domain'),
+			'menu_name' => __('Comodidades Imóveis', 'text_domain'),
+			'all_items' => __('Todos', 'text_domain'),
+			'parent_item' => __('Pai', 'text_domain'),
+			'parent_item_colon' => __('Pai:', 'text_domain'),
+			'new_item_name' => __('Novo', 'text_domain'),
+			'add_new_item' => __('Adicionar', 'text_domain'),
+			'edit_item' => __('Editar', 'text_domain'),
+			'update_item' => __('Atualizar', 'text_domain'),
+			'view_item' => __('Ver item', 'text_domain'),
+			'separate_items_with_commas' => __('Separe os itens com virgulas', 'text_domain'),
+			'add_or_remove_items' => __('Adicione ou remova itens', 'text_domain'),
+			'choose_from_most_used' => __('Escolha entre os mais utilizados', 'text_domain'),
+			'popular_items' => __('Itens populares', 'text_domain'),
+			'search_items' => __('Pesquisar', 'text_domain'),
+			'not_found' => __('Nada encontrado', 'text_domain'),
+			'no_terms' => __('Sem itens', 'text_domain'),
+			'items_list' => __('Lista de itens', 'text_domain'),
+			'items_list_navigation' => __('Navegar nos itens', 'text_domain'),
 		);
 		$args = array(
-			'labels'                     => $labels,
-			'hierarchical'               => true,
-			'public'                     => true,
-			'show_ui'                    => true,
-			'show_admin_column'          => false,
-			'show_in_nav_menus'          => false,
-			'show_tagcloud'              => false,
+			'labels' => $labels,
+			'hierarchical' => true,
+			'public' => true,
+			'show_ui' => true,
+			'show_admin_column' => false,
+			'show_in_nav_menus' => false,
+			'show_tagcloud' => false,
 		);
-		register_taxonomy( 'imovel_comodidades', array( 'imovel' ), $args );
+		register_taxonomy('imovel_comodidades', array('imovel'), $args);
 
 	}
-	add_action( 'init', 'custom_taxonomy_comodidadesimovel', 0 );
+	add_action('init', 'custom_taxonomy_comodidadesimovel', 0);
 
 }
 
-if ( ! function_exists( 'custom_taxonomy_comodidadescondominio' ) ) {
+if (!function_exists('custom_taxonomy_comodidadescondominio')) {
 
-// Register Custom Taxonomy
-function custom_taxonomy_comodidadescondominio() {
+	// Register Custom Taxonomy
+	function custom_taxonomy_comodidadescondominio()
+	{
 
-	$labels = array(
-		'name'                       => _x( 'Comodidades Condomínio', 'Taxonomy General Name', 'text_domain' ),
-		'singular_name'              => _x( 'Comodidade Condomínio', 'Taxonomy Singular Name', 'text_domain' ),
-		'menu_name'                  => __( 'Comodidades Condomínio', 'text_domain' ),
-		'all_items'                  => __( 'Todos', 'text_domain' ),
-		'parent_item'                => __( 'Pai', 'text_domain' ),
-		'parent_item_colon'          => __( 'Pai:', 'text_domain' ),
-		'new_item_name'              => __( 'Novo', 'text_domain' ),
-		'add_new_item'               => __( 'Adicionar', 'text_domain' ),
-		'edit_item'                  => __( 'Editar', 'text_domain' ),
-		'update_item'                => __( 'Atualizar', 'text_domain' ),
-		'view_item'                  => __( 'Ver item', 'text_domain' ),
-		'separate_items_with_commas' => __( 'Separe os itens com virgulas', 'text_domain' ),
-		'add_or_remove_items'        => __( 'Adicione ou remova itens', 'text_domain' ),
-		'choose_from_most_used'      => __( 'Escolha entre os mais utilizados', 'text_domain' ),
-		'popular_items'              => __( 'Itens populares', 'text_domain' ),
-		'search_items'               => __( 'Pesquisar', 'text_domain' ),
-		'not_found'                  => __( 'Nada encontrado', 'text_domain' ),
-		'no_terms'                   => __( 'Sem itens', 'text_domain' ),
-		'items_list'                 => __( 'Lista de itens', 'text_domain' ),
-		'items_list_navigation'      => __( 'Navegar nos itens', 'text_domain' ),
-	);
-	$args = array(
-		'labels'                     => $labels,
-		'hierarchical'               => true,
-		'public'                     => true,
-		'show_ui'                    => true,
-		'show_admin_column'          => false,
-		'show_in_nav_menus'          => false,
-		'show_tagcloud'              => false,
-	);
-	register_taxonomy( 'condominio_comodidades', array( 'imovel' ), $args );
+		$labels = array(
+			'name' => _x('Comodidades Condomínio', 'Taxonomy General Name', 'text_domain'),
+			'singular_name' => _x('Comodidade Condomínio', 'Taxonomy Singular Name', 'text_domain'),
+			'menu_name' => __('Comodidades Condomínio', 'text_domain'),
+			'all_items' => __('Todos', 'text_domain'),
+			'parent_item' => __('Pai', 'text_domain'),
+			'parent_item_colon' => __('Pai:', 'text_domain'),
+			'new_item_name' => __('Novo', 'text_domain'),
+			'add_new_item' => __('Adicionar', 'text_domain'),
+			'edit_item' => __('Editar', 'text_domain'),
+			'update_item' => __('Atualizar', 'text_domain'),
+			'view_item' => __('Ver item', 'text_domain'),
+			'separate_items_with_commas' => __('Separe os itens com virgulas', 'text_domain'),
+			'add_or_remove_items' => __('Adicione ou remova itens', 'text_domain'),
+			'choose_from_most_used' => __('Escolha entre os mais utilizados', 'text_domain'),
+			'popular_items' => __('Itens populares', 'text_domain'),
+			'search_items' => __('Pesquisar', 'text_domain'),
+			'not_found' => __('Nada encontrado', 'text_domain'),
+			'no_terms' => __('Sem itens', 'text_domain'),
+			'items_list' => __('Lista de itens', 'text_domain'),
+			'items_list_navigation' => __('Navegar nos itens', 'text_domain'),
+		);
+		$args = array(
+			'labels' => $labels,
+			'hierarchical' => true,
+			'public' => true,
+			'show_ui' => true,
+			'show_admin_column' => false,
+			'show_in_nav_menus' => false,
+			'show_tagcloud' => false,
+		);
+		register_taxonomy('condominio_comodidades', array('imovel'), $args);
 
-}
-add_action( 'init', 'custom_taxonomy_comodidadescondominio', 0 );
-
-}
-if ( ! function_exists( 'custom_taxonomy_localizacao' ) ) {
-
-// Register Custom Taxonomy
-function custom_taxonomy_localizacao() {
-
-	$labels = array(
-		'name'                       => _x( 'Localização', 'Taxonomy General Name', 'text_domain' ),
-		'singular_name'              => _x( 'Localização', 'Taxonomy Singular Name', 'text_domain' ),
-		'menu_name'                  => __( 'Localização', 'text_domain' ),
-		'all_items'                  => __( 'Todos', 'text_domain' ),
-		'parent_item'                => __( 'Pai', 'text_domain' ),
-		'parent_item_colon'          => __( 'Pai:', 'text_domain' ),
-		'new_item_name'              => __( 'Novo', 'text_domain' ),
-		'add_new_item'               => __( 'Adicionar', 'text_domain' ),
-		'edit_item'                  => __( 'Editar', 'text_domain' ),
-		'update_item'                => __( 'Atualizar', 'text_domain' ),
-		'view_item'                  => __( 'Ver item', 'text_domain' ),
-		'separate_items_with_commas' => __( 'Separe os itens com virgulas', 'text_domain' ),
-		'add_or_remove_items'        => __( 'Adicione ou remova itens', 'text_domain' ),
-		'choose_from_most_used'      => __( 'Escolha entre os mais utilizados', 'text_domain' ),
-		'popular_items'              => __( 'Itens populares', 'text_domain' ),
-		'search_items'               => __( 'Pesquisar', 'text_domain' ),
-		'not_found'                  => __( 'Nada encontrado', 'text_domain' ),
-		'no_terms'                   => __( 'Sem itens', 'text_domain' ),
-		'items_list'                 => __( 'Lista de itens', 'text_domain' ),
-		'items_list_navigation'      => __( 'Navegar nos itens', 'text_domain' ),
-	);
-	$args = array(
-		'labels'                     => $labels,
-		'hierarchical'               => true,
-		'public'                     => true,
-		'show_ui'                    => true,
-		'show_admin_column'          => false,
-		'show_in_nav_menus'          => false,
-		'show_tagcloud'              => false,
-	);
-	register_taxonomy( 'localizacao', array( 'imovel' ), $args );
+	}
+	add_action('init', 'custom_taxonomy_comodidadescondominio', 0);
 
 }
-add_action( 'init', 'custom_taxonomy_localizacao', 0 );
+if (!function_exists('custom_taxonomy_localizacao')) {
+
+	// Register Custom Taxonomy
+	function custom_taxonomy_localizacao()
+	{
+
+		$labels = array(
+			'name' => _x('Localização', 'Taxonomy General Name', 'text_domain'),
+			'singular_name' => _x('Localização', 'Taxonomy Singular Name', 'text_domain'),
+			'menu_name' => __('Localização', 'text_domain'),
+			'all_items' => __('Todos', 'text_domain'),
+			'parent_item' => __('Pai', 'text_domain'),
+			'parent_item_colon' => __('Pai:', 'text_domain'),
+			'new_item_name' => __('Novo', 'text_domain'),
+			'add_new_item' => __('Adicionar', 'text_domain'),
+			'edit_item' => __('Editar', 'text_domain'),
+			'update_item' => __('Atualizar', 'text_domain'),
+			'view_item' => __('Ver item', 'text_domain'),
+			'separate_items_with_commas' => __('Separe os itens com virgulas', 'text_domain'),
+			'add_or_remove_items' => __('Adicione ou remova itens', 'text_domain'),
+			'choose_from_most_used' => __('Escolha entre os mais utilizados', 'text_domain'),
+			'popular_items' => __('Itens populares', 'text_domain'),
+			'search_items' => __('Pesquisar', 'text_domain'),
+			'not_found' => __('Nada encontrado', 'text_domain'),
+			'no_terms' => __('Sem itens', 'text_domain'),
+			'items_list' => __('Lista de itens', 'text_domain'),
+			'items_list_navigation' => __('Navegar nos itens', 'text_domain'),
+		);
+		$args = array(
+			'labels' => $labels,
+			'hierarchical' => true,
+			'public' => true,
+			'show_ui' => true,
+			'show_admin_column' => false,
+			'show_in_nav_menus' => false,
+			'show_tagcloud' => false,
+		);
+		register_taxonomy('localizacao', array('imovel'), $args);
+
+	}
+	add_action('init', 'custom_taxonomy_localizacao', 0);
 
 }
 
-add_filter( 'single_template', 'jetimob_single_template', 50, 1 );
-function jetimob_single_template( $template ) {
+add_filter('single_template', 'jetimob_single_template', 50, 1);
+function jetimob_single_template($template)
+{
 
-	if ( is_singular( 'imovel' ) ) {
+	if (is_singular('imovel')) {
 		//$template = plugin_dir_path( 'templates/single-imovel.php', __FILE__ );
-		$template = plugin_dir_path( __FILE__ ).'templates/single-imovel.php';
+		$template = plugin_dir_path(__FILE__) . 'templates/single-imovel.php';
 	}
-	
+
 	return $template;
 }
 
 
-add_filter( 'archive_template', 'jetimob_archive_template', 50, 1 );
-function jetimob_archive_template( $template ) {
+add_filter('archive_template', 'jetimob_archive_template', 50, 1);
+function jetimob_archive_template($template)
+{
 
-	if ( is_archive( 'imovel' ) ) {
+	if (is_archive('imovel')) {
 		//$template = plugin_dir_path( 'templates/single-imovel.php', __FILE__ );
-		$template = plugin_dir_path( __FILE__ ).'templates/archive-imovel.php';
+		$template = plugin_dir_path(__FILE__) . 'templates/archive-imovel.php';
 	}
-	
+
 	return $template;
 }
 
 
-function jetimob_enqueue_script() { 
-	$options = get_site_option('jetimob_option_name'); 
-    $maps_api = $options['gmaps'];  
- 	
- 	wp_enqueue_script( 'google_js', 'https://maps.googleapis.com/maps/api/js?v=3&key='.$maps_api, '', null, '' );
+function jetimob_enqueue_script()
+{
+	$options = get_site_option('jetimob_option_name');
+	$maps_api = $options['gmaps'];
 
-    wp_enqueue_script( 'jquery', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js', '', null,'' );
-    //wp_enqueue_script( 'slider_js', 'https://cdnjs.cloudflare.com/ajax/libs/galleria/1.5.7/galleria.js', '', null,'' );
+	wp_enqueue_script('google_js', 'https://maps.googleapis.com/maps/api/js?v=3&key=' . $maps_api, '', null, '');
+
+	wp_enqueue_script('jquery', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js', '', null, '');
+	//wp_enqueue_script( 'slider_js', 'https://cdnjs.cloudflare.com/ajax/libs/galleria/1.5.7/galleria.js', '', null,'' );
 	//wp_register_script( 'slider_imovel' );
 
 
@@ -599,18 +623,20 @@ function jetimob_enqueue_script() {
 
 add_action('wp_enqueue_scripts', 'jetimob_enqueue_script');
 
-function wpse255804_add_page_template ($templates) {
-    $templates['advanced-search.php'] = 'resultados de busca';
-    return $templates;
-    }
-add_filter ('theme_page_templates', 'wpse255804_add_page_template');
+function wpse255804_add_page_template($templates)
+{
+	$templates['advanced-search.php'] = 'resultados de busca';
+	return $templates;
+}
+add_filter('theme_page_templates', 'wpse255804_add_page_template');
 
-function wpse255804_redirect_page_template ($template) {
-    if ('advanced-search.php' == basename ($template))
-        $template = WP_PLUGIN_DIR . '/jetimob/templates/advanced-search.php';
-    return $template;
-    }
-add_filter ('page_template', 'wpse255804_redirect_page_template');
+function wpse255804_redirect_page_template($template)
+{
+	if ('advanced-search.php' == basename($template))
+		$template = WP_PLUGIN_DIR . '/jetimob/templates/advanced-search.php';
+	return $template;
+}
+add_filter('page_template', 'wpse255804_redirect_page_template');
 
 // Add Search Fields
 /*
@@ -651,18 +677,18 @@ update_post_meta($postid, '_search-filter-fields', 'a:10:{i:0;a:18:{s:4:"type";s
 
 include_once('updater.php');
 if (is_admin()) { // note the use of is_admin() to double check that this is happening in the admin
-		$config = array(
-			'slug' => plugin_basename(__FILE__), // this is the slug of your plugin
-			'proper_folder_name' => 'jetimob-plugin-wordpress', // this is the name of the folder your plugin lives in
-			'api_url' => 'https://api.github.com/repos/AndyDeku/jetimobi-wordpress', // the GitHub API url of your GitHub repo
-			'raw_url' => 'https://raw.github.com/AndyDeku/jetimobi-wordpress/master', // the GitHub raw url of your GitHub repo
-			'github_url' => 'https://github.com/AndyDeku/jetimobi-wordpress', // the GitHub url of your GitHub repo
-			'zip_url' => 'https://github.com/AndyDeku/jetimobi-wordpress/zipball/master', // the zip url of the GitHub repo
-			'sslverify' => true, // whether WP should check the validity of the SSL cert when getting an update, see https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/2 and https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/4 for details
-			'requires' => '4.8', // which version of WordPress does your plugin require?
-			'tested' => '5.3', // which version of WordPress is your plugin tested up to?
-			'readme' => 'README.md', // which file to use as the readme for the version number
-			'access_token' => '', // Access private repositories by authorizing under Appearance > GitHub Updates when this example plugin is installed
-		);
-		new WP_GitHub_Updater($config);
-	}
+	$config = array(
+		'slug' => plugin_basename(__FILE__), // this is the slug of your plugin
+		'proper_folder_name' => 'jetimob-plugin-wordpress', // this is the name of the folder your plugin lives in
+		'api_url' => 'https://api.github.com/repos/AndyDeku/jetimobi-wordpress', // the GitHub API url of your GitHub repo
+		'raw_url' => 'https://raw.github.com/AndyDeku/jetimobi-wordpress/master', // the GitHub raw url of your GitHub repo
+		'github_url' => 'https://github.com/AndyDeku/jetimobi-wordpress', // the GitHub url of your GitHub repo
+		'zip_url' => 'https://github.com/AndyDeku/jetimobi-wordpress/zipball/master', // the zip url of the GitHub repo
+		'sslverify' => true, // whether WP should check the validity of the SSL cert when getting an update, see https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/2 and https://github.com/jkudish/WordPress-GitHub-Plugin-Updater/issues/4 for details
+		'requires' => '4.8', // which version of WordPress does your plugin require?
+		'tested' => '5.3', // which version of WordPress is your plugin tested up to?
+		'readme' => 'README.md', // which file to use as the readme for the version number
+		'access_token' => '', // Access private repositories by authorizing under Appearance > GitHub Updates when this example plugin is installed
+	);
+	new WP_GitHub_Updater($config);
+}

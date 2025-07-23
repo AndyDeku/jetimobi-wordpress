@@ -17,6 +17,7 @@ Plugin de integração do CRM imobiliário [Jetimob] (https://jetimob.com) com o
 3. Acesse o menu Jetimob para ajustar as opções do plugin.
 4. Na tela de opções, não esqueça de inserir as chaves de API para sincronização dos imóveis e envio dos leads para o Jetimob. Estas opções encontram-se na aba "Jetimob - Geral".
 5. Para a sincronização dos imóveis ser realizada, é necessária a configuração de uma tarefa cron em seu servidor. Consulte a documentação de sua hospedagem ou painel de controle para saber como proceder para realizar a configuração. A tarefa cron deve configurada para executar o comando "php -q http://URL/wp-content/plugins/jetimob/start.php", substituindo o 'URL' pela url do seu site. Se o seu site usa HTTPS - o que recomendamos - substitua "http" por "https". Recomendamos que a sincronização seja feita no máximo duas vezes por dia, uma taxa de requisições diárias elevado ocasionará um bloqueio no IP do seu site, impedindo que os imóveis sejam sincronizados. Para configurar a tarefa manualmente para execução a cada hora, utilize como configuração do tempo de execução "0 */1 * * *", podendo substituir os horários para outros de sua preferência. 
+6. Use o shortcode [lista_imoveis] para ter os imoveis
 
 Caso o script de importação trave ao executar, é necessário executar cada passo da importação manualmente.
 Substitua a entrada cron que contém o arquivo start.php e insira estas, respeitando esta ordem:
