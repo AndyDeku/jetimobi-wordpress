@@ -32,37 +32,7 @@ function activate($wp = '4.8', $php = '7.2.24')
 	deactivate_plugins(basename(__FILE__));
 	wp_die('<p>O plugin <strong>Jetimob/strong> requer ' . $flag . '  versão ' . $version . ' ou superior.</p>', 'Plugin Activation Error', array('response' => 200, 'back_link' => TRUE));
 }
-// Adiciona shortcode [lista_imoveis]
-function shortcode_lista_imoveis($atts)
-{
-	ob_start();
 
-	$query = new WP_Query([
-		'post_type' => 'imoveis',
-		'posts_per_page' => 10
-	]);
-
-	if ($query->have_posts()) {
-		echo '<div class="lista-imoveis">';
-		while ($query->have_posts()) {
-			$query->the_post();
-			echo '<div class="item-imovel">';
-			echo '<h2><a href="' . get_permalink() . '">' . get_the_title() . '</a></h2>';
-			if (has_post_thumbnail()) {
-				the_post_thumbnail('medium');
-			}
-			echo '<div class="desc">' . get_the_excerpt() . '</div>';
-			echo '</div>';
-		}
-		echo '</div>';
-	} else {
-		echo '<p>Nenhum imóvel encontrado.</p>';
-	}
-
-	wp_reset_postdata();
-	return ob_get_clean();
-}
-add_shortcode('lista_imoveis', 'shortcode_lista_imoveis');
 /**
  * Opções de Configuração do Plugin
  * Jetimob
@@ -81,8 +51,39 @@ class Jetimob
 	{
 		add_action('admin_menu', array($this, 'jetimob_add_plugin_page'));
 		add_action('admin_init', array($this, 'jetimob_page_init'));
+		add_shortcode('lista_imoveis', 'shortcode_lista_imoveis');
 	}
 
+	// Adiciona shortcode [lista_imoveis]
+	function shortcode_lista_imoveis($atts)
+	{
+		ob_start();
+
+		$query = new WP_Query([
+			'post_type' => 'imoveis',
+			'posts_per_page' => 10
+		]);
+
+		if ($query->have_posts()) {
+			echo '<div class="lista-imoveis">';
+			while ($query->have_posts()) {
+				$query->the_post();
+				echo '<div class="item-imovel">';
+				echo '<h2><a href="' . get_permalink() . '">' . get_the_title() . '</a></h2>';
+				if (has_post_thumbnail()) {
+					the_post_thumbnail('medium');
+				}
+				echo '<div class="desc">' . get_the_excerpt() . '</div>';
+				echo '</div>';
+			}
+			echo '</div>';
+		} else {
+			echo '<p>Nenhum imóvel encontrado.</p>';
+		}
+
+		wp_reset_postdata();
+		return ob_get_clean();
+	}
 	public function jetimob_add_plugin_page()
 	{
 		add_menu_page(
