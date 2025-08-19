@@ -51,39 +51,8 @@ class Jetimob
 	{
 		add_action('admin_menu', array($this, 'jetimob_add_plugin_page'));
 		add_action('admin_init', array($this, 'jetimob_page_init'));
-		add_shortcode('lista_imoveis', 'shortcode_lista_imoveis');
 	}
 
-	// Adiciona shortcode [lista_imoveis]
-	function shortcode_lista_imoveis($atts)
-	{
-		ob_start();
-
-		$query = new WP_Query([
-			'post_type' => 'imoveis',
-			'posts_per_page' => 10
-		]);
-
-		if ($query->have_posts()) {
-			echo '<div class="lista-imoveis">';
-			while ($query->have_posts()) {
-				$query->the_post();
-				echo '<div class="item-imovel">';
-				echo '<h2><a href="' . get_permalink() . '">' . get_the_title() . '</a></h2>';
-				if (has_post_thumbnail()) {
-					the_post_thumbnail('medium');
-				}
-				echo '<div class="desc">' . get_the_excerpt() . '</div>';
-				echo '</div>';
-			}
-			echo '</div>';
-		} else {
-			echo '<p>Nenhum imóvel encontrado.</p>';
-		}
-
-		wp_reset_postdata();
-		return ob_get_clean();
-	}
 	public function jetimob_add_plugin_page()
 	{
 		add_menu_page(
@@ -210,18 +179,6 @@ function jetimob_register_required_plugins()
 		array(
 			'name' => 'Font Awesome',
 			'slug' => 'font-awesome',
-			'required' => false,
-		),
-		array(
-			'name' => 'Search & Filter Pro',
-			'slug' => 'search-filter-pro',
-			'source' => dirname(__FILE__) . '/addon/search-filter-pro.zip',
-			'required' => false,
-		),
-		array(
-			'name' => 'Github Updater',
-			'slug' => 'github-updater',
-			'source' => 'https://codeload.github.com/afragen/github-updater/zip/master',
 			'required' => false,
 		),
 
@@ -493,6 +450,49 @@ if (!function_exists('custom_taxonomy_comodidadesimovel')) {
 
 }
 
+if (!function_exists('custom_taxonomy_condominio')) {
+
+	// Register Custom Taxonomy
+	function custom_taxonomy_condominio()
+	{
+
+		$labels = array(
+			'name' => _x('Condomínios', 'Taxonomy General Name', 'text_domain'),
+			'singular_name' => _x('Condomínios', 'Taxonomy Singular Name', 'text_domain'),
+			'menu_name' => __('Condomínios', 'text_domain'),
+			'all_items' => __('Todos', 'text_domain'),
+			'parent_item' => __('Pai', 'text_domain'),
+			'parent_item_colon' => __('Pai:', 'text_domain'),
+			'new_item_name' => __('Novo', 'text_domain'),
+			'add_new_item' => __('Adicionar', 'text_domain'),
+			'edit_item' => __('Editar', 'text_domain'),
+			'update_item' => __('Atualizar', 'text_domain'),
+			'view_item' => __('Ver item', 'text_domain'),
+			'separate_items_with_commas' => __('Separe os itens com virgulas', 'text_domain'),
+			'add_or_remove_items' => __('Adicione ou remova itens', 'text_domain'),
+			'choose_from_most_used' => __('Escolha entre os mais utilizados', 'text_domain'),
+			'popular_items' => __('Itens populares', 'text_domain'),
+			'search_items' => __('Pesquisar', 'text_domain'),
+			'not_found' => __('Nada encontrado', 'text_domain'),
+			'no_terms' => __('Sem itens', 'text_domain'),
+			'items_list' => __('Lista de itens', 'text_domain'),
+			'items_list_navigation' => __('Navegar nos itens', 'text_domain'),
+		);
+		$args = array(
+			'labels' => $labels,
+			'hierarchical' => true,
+			'public' => true,
+			'show_ui' => true,
+			'show_admin_column' => false,
+			'show_in_nav_menus' => false,
+			'show_tagcloud' => false,
+		);
+		register_taxonomy('condominio_nome', array('imovel'), $args);
+
+	}
+	add_action('init', 'custom_taxonomy_condominio', 0);
+
+}
 if (!function_exists('custom_taxonomy_comodidadescondominio')) {
 
 	// Register Custom Taxonomy
@@ -536,16 +536,16 @@ if (!function_exists('custom_taxonomy_comodidadescondominio')) {
 	add_action('init', 'custom_taxonomy_comodidadescondominio', 0);
 
 }
-if (!function_exists('custom_taxonomy_localizacao')) {
+if (!function_exists('custom_taxonomy_situacao')) {
 
 	// Register Custom Taxonomy
-	function custom_taxonomy_localizacao()
+	function custom_taxonomy_situacao()
 	{
 
 		$labels = array(
-			'name' => _x('Localização', 'Taxonomy General Name', 'text_domain'),
-			'singular_name' => _x('Localização', 'Taxonomy Singular Name', 'text_domain'),
-			'menu_name' => __('Localização', 'text_domain'),
+			'name' => _x('Situação', 'Taxonomy General Name', 'text_domain'),
+			'singular_name' => _x('Situação', 'Taxonomy Singular Name', 'text_domain'),
+			'menu_name' => __('Situação', 'text_domain'),
 			'all_items' => __('Todos', 'text_domain'),
 			'parent_item' => __('Pai', 'text_domain'),
 			'parent_item_colon' => __('Pai:', 'text_domain'),
@@ -573,10 +573,140 @@ if (!function_exists('custom_taxonomy_localizacao')) {
 			'show_in_nav_menus' => false,
 			'show_tagcloud' => false,
 		);
-		register_taxonomy('localizacao', array('imovel'), $args);
+		register_taxonomy('situacao', array('imovel'), $args);
 
 	}
-	add_action('init', 'custom_taxonomy_localizacao', 0);
+	add_action('init', 'custom_taxonomy_situacao', 0);
+
+}
+
+if (!function_exists('custom_taxonomy_estado')) {
+
+	// Register Custom Taxonomy
+	function custom_taxonomy_estado()
+	{
+
+		$labels = array(
+			'name' => _x('Estado', 'Taxonomy General Name', 'text_domain'),
+			'singular_name' => _x('Estado', 'Taxonomy Singular Name', 'text_domain'),
+			'menu_name' => __('Estado', 'text_domain'),
+			'all_items' => __('Todos', 'text_domain'),
+			'parent_item' => __('Pai', 'text_domain'),
+			'parent_item_colon' => __('Pai:', 'text_domain'),
+			'new_item_name' => __('Novo', 'text_domain'),
+			'add_new_item' => __('Adicionar', 'text_domain'),
+			'edit_item' => __('Editar', 'text_domain'),
+			'update_item' => __('Atualizar', 'text_domain'),
+			'view_item' => __('Ver item', 'text_domain'),
+			'separate_items_with_commas' => __('Separe os itens com virgulas', 'text_domain'),
+			'add_or_remove_items' => __('Adicione ou remova itens', 'text_domain'),
+			'choose_from_most_used' => __('Escolha entre os mais utilizados', 'text_domain'),
+			'popular_items' => __('Itens populares', 'text_domain'),
+			'search_items' => __('Pesquisar', 'text_domain'),
+			'not_found' => __('Nada encontrado', 'text_domain'),
+			'no_terms' => __('Sem itens', 'text_domain'),
+			'items_list' => __('Lista de itens', 'text_domain'),
+			'items_list_navigation' => __('Navegar nos itens', 'text_domain'),
+		);
+		$args = array(
+			'labels' => $labels,
+			'hierarchical' => true,
+			'public' => true,
+			'show_ui' => true,
+			'show_admin_column' => false,
+			'show_in_nav_menus' => false,
+			'show_tagcloud' => false,
+		);
+		register_taxonomy('property_state', array('imovel'), $args);
+
+	}
+	add_action('init', 'custom_taxonomy_estado', 0);
+
+}
+if (!function_exists('custom_taxonomy_cidade')) {
+
+	// Register Custom Taxonomy
+	function custom_taxonomy_cidade()
+	{
+
+		$labels = array(
+			'name' => _x('Cidade', 'Taxonomy General Name', 'text_domain'),
+			'singular_name' => _x('Cidade', 'Taxonomy Singular Name', 'text_domain'),
+			'menu_name' => __('Cidade', 'text_domain'),
+			'all_items' => __('Todos', 'text_domain'),
+			'parent_item' => __('Pai', 'text_domain'),
+			'parent_item_colon' => __('Pai:', 'text_domain'),
+			'new_item_name' => __('Novo', 'text_domain'),
+			'add_new_item' => __('Adicionar', 'text_domain'),
+			'edit_item' => __('Editar', 'text_domain'),
+			'update_item' => __('Atualizar', 'text_domain'),
+			'view_item' => __('Ver item', 'text_domain'),
+			'separate_items_with_commas' => __('Separe os itens com virgulas', 'text_domain'),
+			'add_or_remove_items' => __('Adicione ou remova itens', 'text_domain'),
+			'choose_from_most_used' => __('Escolha entre os mais utilizados', 'text_domain'),
+			'popular_items' => __('Itens populares', 'text_domain'),
+			'search_items' => __('Pesquisar', 'text_domain'),
+			'not_found' => __('Nada encontrado', 'text_domain'),
+			'no_terms' => __('Sem itens', 'text_domain'),
+			'items_list' => __('Lista de itens', 'text_domain'),
+			'items_list_navigation' => __('Navegar nos itens', 'text_domain'),
+		);
+		$args = array(
+			'labels' => $labels,
+			'hierarchical' => true,
+			'public' => true,
+			'show_ui' => true,
+			'show_admin_column' => false,
+			'show_in_nav_menus' => false,
+			'show_tagcloud' => false,
+		);
+		register_taxonomy('property_city', array('imovel'), $args);
+
+	}
+	add_action('init', 'custom_taxonomy_cidade', 0);
+
+}
+if (!function_exists('custom_taxonomy_area')) {
+
+	// Register Custom Taxonomy
+	function custom_taxonomy_area()
+	{
+
+		$labels = array(
+			'name' => _x('Área', 'Taxonomy General Name', 'text_domain'),
+			'singular_name' => _x('Área', 'Taxonomy Singular Name', 'text_domain'),
+			'menu_name' => __('Área', 'text_domain'),
+			'all_items' => __('Todos', 'text_domain'),
+			'parent_item' => __('Pai', 'text_domain'),
+			'parent_item_colon' => __('Pai:', 'text_domain'),
+			'new_item_name' => __('Novo', 'text_domain'),
+			'add_new_item' => __('Adicionar', 'text_domain'),
+			'edit_item' => __('Editar', 'text_domain'),
+			'update_item' => __('Atualizar', 'text_domain'),
+			'view_item' => __('Ver item', 'text_domain'),
+			'separate_items_with_commas' => __('Separe os itens com virgulas', 'text_domain'),
+			'add_or_remove_items' => __('Adicione ou remova itens', 'text_domain'),
+			'choose_from_most_used' => __('Escolha entre os mais utilizados', 'text_domain'),
+			'popular_items' => __('Itens populares', 'text_domain'),
+			'search_items' => __('Pesquisar', 'text_domain'),
+			'not_found' => __('Nada encontrado', 'text_domain'),
+			'no_terms' => __('Sem itens', 'text_domain'),
+			'items_list' => __('Lista de itens', 'text_domain'),
+			'items_list_navigation' => __('Navegar nos itens', 'text_domain'),
+		);
+		$args = array(
+			'labels' => $labels,
+			'hierarchical' => true,
+			'public' => true,
+			'show_ui' => true,
+			'show_admin_column' => false,
+			'show_in_nav_menus' => false,
+			'show_tagcloud' => false,
+		);
+		register_taxonomy('property_area', array('imovel'), $args);
+
+	}
+	add_action('init', 'custom_taxonomy_area', 0);
 
 }
 
