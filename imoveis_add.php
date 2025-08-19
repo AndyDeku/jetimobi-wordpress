@@ -56,7 +56,7 @@ foreach ($str1 as $key => $value) {
 
 	if (!is_null($value['condominio_nome'])) {
 		$slug = $tit_tipo . ' ' . $value['condominio_nome'] . ' ' . $value['endereco_cidade'];
-		$titulo = $tit_tipo . ' ' . $value['condominio_nome'];
+		$titulo = $value['condominio_nome'];
 	} else {
 		if (!is_null($value['titulo_anuncio']) || $value['titulo_anuncio'] != "")
 			$titulo = $value['titulo_anuncio'];
