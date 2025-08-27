@@ -218,7 +218,7 @@ foreach ($str1 as $key => $value) {
 
             $salva_cidade = wp_set_object_terms($post->ID, $value['endereco_cidade'], 'property_city');
 
-            $salva_bairro = wp_set_object_terms($post->ID, $bairro, 'property_area');
+            $salva_bairro = wp_set_object_terms($post->ID, $bairro_so, 'property_area');
 
 
             // Associa estado (só se encontrou o termo)
@@ -786,29 +786,18 @@ foreach ($str1 as $key => $value) {
 
             $imagens = $value['imagens'];
             $galeria = [];
-            if (!is_null($imagens)) {
-
-                //$ibagens = $value['imagens'][0]['link'];
-
-                foreach ($imagens as $imagem) {
-
-                    $galeria[] = $imagem['link'];
-
+            if (!is_null($imagens) && count($imagens) > 0 && is_array($imagens)) {
+                foreach ($imagens as $ind => $imagem) {
                     add_post_meta($post->ID, 'galeria_imagens', $imagem['link']);
-
                 }
+
+                $ibagens = $value['imagens'][0]['link'];
 
                 add_post_meta($post->ID, 'slider', 'yes');
-                if (isset($galeria[0])) {
-                    add_post_meta($post->ID, 'imagem_slider', $galeria[0]);
 
-                    add_post_meta($post->ID, 'fifu_image_url', $galeria[0]);
+                add_post_meta($post->ID, 'imagem_slider', $ibagens);
 
-                    update_post_meta($post->ID, '_thumbnail_id', '-1');
-
-                    Generate_Featured_Image($galeria[0], $post->ID);
-                    sleep(1);
-                }
+                add_post_meta($post->ID, 'fifu_image_url', $ibagens);
             }
 
 

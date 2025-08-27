@@ -1,6 +1,6 @@
 === Jetimob ===
 Contributors: opaweb
-Tags: jetimob, crm, imobiliária, imóveis
+Tags: jetimob, crm, imobiliária, imóveis, avada
 Requires at least: 4.8
 Tested up to: 5.3
 Stable tag: 3.1
@@ -12,12 +12,12 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Plugin de integração do CRM imobiliário [Jetimob] (https://jetimob.com) com o WordPress. Com este plugin, você poderá manter sincronizados os imóveis do CRM e do seu site.
 
 === Installation ===
-1. Baixe o plugin e extraia seu conteúdo na pasta wp-content/plugins/ ou instale diretamente pelo painel de Plugins de sua instalação WordPress.
-2. Ative o plugin na tela "Plugins" do seu site.
-3. Acesse o menu Jetimob para ajustar as opções do plugin.
-4. Na tela de opções, não esqueça de inserir as chaves de API para sincronização dos imóveis e envio dos leads para o Jetimob. Estas opções encontram-se na aba "Jetimob - Geral".
-5. Para a sincronização dos imóveis ser realizada, é necessária a configuração de uma tarefa cron em seu servidor. Consulte a documentação de sua hospedagem ou painel de controle para saber como proceder para realizar a configuração. A tarefa cron deve configurada para executar o comando "php -q http://URL/wp-content/plugins/jetimob/start.php", substituindo o 'URL' pela url do seu site. Se o seu site usa HTTPS - o que recomendamos - substitua "http" por "https". Recomendamos que a sincronização seja feita no máximo duas vezes por dia, uma taxa de requisições diárias elevado ocasionará um bloqueio no IP do seu site, impedindo que os imóveis sejam sincronizados. Para configurar a tarefa manualmente para execução a cada hora, utilize como configuração do tempo de execução "0 */1 * * *", podendo substituir os horários para outros de sua preferência. 
-6. Use o shortcode [lista_imoveis] para ter os imoveis
+1. Instale o Tema Avada
+2. Baixe o plugin e extraia seu conteúdo na pasta wp-content/plugins/ ou instale diretamente pelo painel de Plugins de sua instalação WordPress.
+3. Ative o plugin na tela "Plugins" do seu site.
+4. Acesse o menu Jetimob para ajustar as opções do plugin.
+5. Na tela de opções, não esqueça de inserir as chaves de API para sincronização dos imóveis e envio dos leads para o Jetimob. Estas opções encontram-se na aba "Jetimob - Geral".
+6. Para a sincronização dos imóveis ser realizada, é necessária a configuração de uma tarefa cron em seu servidor. Consulte a documentação de sua hospedagem ou painel de controle para saber como proceder para realizar a configuração. A tarefa cron deve configurada para executar o comando "php -q http://URL/wp-content/plugins/jetimob/start.php", substituindo o 'URL' pela url do seu site. Se o seu site usa HTTPS - o que recomendamos - substitua "http" por "https". Recomendamos que a sincronização seja feita no máximo duas vezes por dia, uma taxa de requisições diárias elevado ocasionará um bloqueio no IP do seu site, impedindo que os imóveis sejam sincronizados. Para configurar a tarefa manualmente para execução a cada hora, utilize como configuração do tempo de execução "0 */1 * * *", podendo substituir os horários para outros de sua preferência. 
 
 Caso o script de importação trave ao executar, é necessário executar cada passo da importação manualmente.
 Substitua a entrada cron que contém o arquivo start.php e insira estas, respeitando esta ordem:
@@ -30,6 +30,13 @@ Novamente, substitua URL pelo endereço do seu site e http por https, quando apl
 
 
 == Changelog ==
+= 4.0.2 = 
+* Busca de imoveis
+= 4.0.1 = 
+* Integração com Avada Theme
+
+= 3.1.4 =
+Correção de bugs gerados no php 8.3 na importação
 
 = 3.1.3 = 
 * Atualização dos endpoints da api - Novo Jetimob
@@ -82,4 +89,4 @@ Correção de diversos bugs. Atualização recomendada.
 = 0.5 =
 Primeira implementação dos recursos de integração.
 
-~Current Version:3.1.1~
+~Current Version:4.0.1~

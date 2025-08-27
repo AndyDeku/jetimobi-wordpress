@@ -1,10 +1,10 @@
 <?php
 /**
  * Plugin Name: Jetimob
- * Version: 3.1.4
+ * Version: 4.0.2
  * Description: Plugin para sincronização de imóveis do Jetimob. Disponível para clientes do <a href="https://jetimob.com">Jetimob</a>.
- * Author: Jetimob
- * Author URI: https://jetimob.com
+ * Author: André Albuquerque
+ * Author URI: https://yac.com.br
  * Text Domain: jetimob
  * Domain Path: /languages/
  * License: GNU General Public License v3.0
@@ -756,7 +756,7 @@ add_action('wp_enqueue_scripts', 'jetimob_enqueue_script');
 
 function wpse255804_add_page_template($templates)
 {
-	$templates['advanced-search.php'] = 'resultados de busca';
+	$templates['advanced-search.php'] = 'Resultados de Busca';
 	return $templates;
 }
 add_filter('theme_page_templates', 'wpse255804_add_page_template');
