@@ -656,14 +656,51 @@ if (!function_exists('custom_taxonomy_cidade')) {
 			'hierarchical' => true,
 			'public' => true,
 			'show_ui' => true,
-			'show_admin_column' => false,
-			'show_in_nav_menus' => false,
-			'show_tagcloud' => false,
+			'show_admin_column' => true,
+			'show_in_nav_menus' => true,
+			'show_tagcloud' => true,
+			'meta_box_cb' => 'post_categories_meta_box',
 		);
 		register_taxonomy('property_city', array('imovel'), $args);
 
 	}
-	add_action('init', 'custom_taxonomy_cidade', 0);
+	add_action('init', 'custom_taxonomy_cidade', 0);// Adiciona campo de URL no formulário de criação
+	// Campo no formulário de criação
+	add_action('property_city_add_form_fields', function ($taxonomy) {
+		?>
+		<div class="form-field term-group">
+			<label for="term-image-url"><?php _e('Imagem (URL)', 'text_domain'); ?></label>
+			<input type="text" id="term-image-url" name="term-image-url" value="">
+			<p class="description"><?php _e('Cole a URL da imagem aqui.', 'text_domain'); ?></p>
+		</div>
+		<?php
+	});
+
+	// Campo no formulário de edição
+	add_action('property_city_edit_form_fields', function ($term, $taxonomy) {
+		$image_url = get_term_meta($term->term_id, 'term_image', true);
+		?>
+		<tr class="form-field term-group-wrap">
+			<th scope="row"><label for="term-image-url"><?php _e('Imagem (URL)', 'text_domain'); ?></label></th>
+			<td>
+				<input type="text" id="term-image-url" name="term-image-url" value="<?php echo esc_attr($image_url); ?>">
+				<p class="description"><?php _e('Cole a URL da imagem aqui.', 'text_domain'); ?></p>
+			</td>
+		</tr>
+		<?php
+	}, 10, 2);
+
+	// Salvar a URL
+	add_action('created_property_city', 'save_term_image_meta', 10, 2);
+	add_action('edited_property_city', 'save_term_image_meta', 10, 2);
+
+	function save_term_image_meta($term_id, $tt_id)
+	{
+		if (isset($_POST['term-image-url']) && '' !== $_POST['term-image-url']) {
+			update_term_meta($term_id, 'term_image', esc_url_raw($_POST['term-image-url']));
+		}
+	}
+
 
 }
 if (!function_exists('custom_taxonomy_area')) {

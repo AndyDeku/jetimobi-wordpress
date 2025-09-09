@@ -26,6 +26,7 @@ if (!empty($property_area)) {
 }
 
 $property_city = get_query_var('property_city'); // /property_city/sp
+echo $property_city;
 if (!empty($property_city)) {
     $tax_query[] = array(
         'taxonomy' => 'property_city',
@@ -336,8 +337,7 @@ if (count($tax_query) > 1) {
 }
 if (count($meta_query) > 1) {
     $args['meta_query'] = $meta_query;
-}
-function create_taxonomy_select($taxonomy, $name, $placeholder = 'Selecione', $multiple = false)
+}function create_taxonomy_select($taxonomy, $name, $placeholder = 'Selecione', $multiple = false)
 {
     $terms = get_terms([
         'taxonomy' => $taxonomy,
@@ -347,21 +347,32 @@ function create_taxonomy_select($taxonomy, $name, $placeholder = 'Selecione', $m
     // se for múltiplo, adiciona []
     $select_name = $multiple ? $name . '[]' : $name;
 
+    // pega valor do filtro (prioridade: $_REQUEST > query_var)
+    $selected_value = null;
+    if (isset($_REQUEST[$name])) {
+        $selected_value = $_REQUEST[$name];
+    } elseif (get_query_var($name)) {
+        $selected_value = get_query_var($name);
+    }
+
     echo '<select name="' . esc_attr($select_name) . '"' . ($multiple ? ' multiple' : '') . '>';
     echo '<option value="">' . esc_html($placeholder) . '</option>';
 
     foreach ($terms as $term) {
         $selected = '';
-        if ($multiple && isset($_GET[$name]) && is_array($_GET[$name]) && in_array($term->slug, $_GET[$name])) {
+
+        if ($multiple && is_array($selected_value) && in_array($term->slug, $selected_value)) {
             $selected = ' selected';
-        } elseif (!$multiple && isset($_GET[$name]) && $_GET[$name] === $term->slug) {
+        } elseif (!$multiple && $selected_value === $term->slug) {
             $selected = ' selected';
         }
 
         echo '<option value="' . esc_attr($term->slug) . '"' . $selected . '>' . esc_html($term->name) . '</option>';
     }
+
     echo '</select>';
 }
+
 
 function create_taxonomy_checkboxes($taxonomy, $name)
 {
@@ -1076,7 +1087,7 @@ $query = new WP_Query($args);
                                         <?php } ?>
                                         <?php if (!is_null($suites) && $suites > 0) { ?>
                                             <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
-                                                    class="fas fa-bed"></i> <strong><?php echo $suites; ?> Suítes</strong></h5>
+                                                    class="fas fa-door-open"></i> <strong><?php echo $suites; ?> Suítes</strong></h5>
                                         <?php } ?>
                                         <?php if (!is_null($banheiros) && $banheiros > 0) { ?>
                                             <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
