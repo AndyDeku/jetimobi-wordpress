@@ -926,7 +926,7 @@ get_header(); ?>
                                     <div class="row">
                                         <div class="col-md-12">
                                             <p><input class="wpcf7-form-control wpcf7-submit has-spinner w-100"
-                                                    type="submit" value="ENVIAR"><span class="wpcf7-spinner"
+                                                    type="submit" value="ENVIAR" style="background: white; color: rgba(233, 78, 26); width: 100%;"><span class="wpcf7-spinner"
                                                     style="background: white; color: rgba(233, 78, 26); width: 100%;"></span>
                                             </p>
                                         </div>

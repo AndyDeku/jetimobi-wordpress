@@ -26,7 +26,7 @@ if (!empty($property_area)) {
 }
 
 $property_city = get_query_var('property_city'); // /property_city/sp
-echo $property_city;
+
 if (!empty($property_city)) {
     $tax_query[] = array(
         'taxonomy' => 'property_city',
@@ -337,7 +337,8 @@ if (count($tax_query) > 1) {
 }
 if (count($meta_query) > 1) {
     $args['meta_query'] = $meta_query;
-}function create_taxonomy_select($taxonomy, $name, $placeholder = 'Selecione', $multiple = false)
+}
+function create_taxonomy_select($taxonomy, $name, $placeholder = 'Selecione', $multiple = false)
 {
     $terms = get_terms([
         'taxonomy' => $taxonomy,
@@ -1033,71 +1034,84 @@ $query = new WP_Query($args);
                                 </div>
                                 <div class="texto-cima" style="display: none">
                                     <h2 class="blog-shortcode-post-title entry-title"
-                                        style="color: black; width: 100%; text-transform:uppercase; margin-bottom: 20px">
+                                        style="color: black; width: 100%; text-transform:uppercase; margin-bottom: 0px">
                                         <strong><?php echo the_title(); ?></strong>
                                     </h2>
-                                    <div style="width:100%; display: grid;grid-template-columns: repeat(2, 1fr); gap: 20px;">
-                                        <?php if (!is_null($valor_venda) && $venda > 0) {
-                                            if (get_post_meta($post->ID, 'valor_venda_visivel', true) == '1') { ?>
-                                                <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><strong>R$
-                                                        <?php echo $valor_venda; ?></strong></h5>
-                                            <?php } else { ?>
-                                                <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;">
-                                                    <strong>Consulte Valores</strong>
-                                                </h5>
-                                            <?php }
-                                        } ?>
-                                        <?php if (!is_null($valor_locacao) && $locacao > 0) {
-                                            if (get_post_meta($post->ID, 'valor_locacao_visivel', true) == '1') { ?>
-                                                <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><strong>R$
-                                                        <?php echo $valor_locacao; ?></strong></h5>
-                                            <?php } else { ?>
-                                                <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;">
-                                                    <strong>Consulte Valores</strong>
-                                                </h5>
-                                            <?php }
-                                        } ?>
+                                    <div style="width:100%;">
+                                        <div
+                                            style="width:100%; display: grid;grid-template-columns: repeat(1, 1fr); gap: 5px; padding: 0px;">
+                                            <?php if (!is_null($valor_venda) && $venda > 0) {
+                                                if (get_post_meta($post->ID, 'valor_venda_visivel', true) == '1') { ?>
+                                                    <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;">
+                                                        <strong>R$
+                                                            <?php echo $valor_venda; ?></strong></h5>
+                                                <?php } else { ?>
+                                                    <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;">
+                                                        <strong>Consulte Valores</strong>
+                                                    </h5>
+                                                <?php }
+                                            } ?>
+                                            <?php if (!is_null($valor_locacao) && $locacao > 0) {
+                                                if (get_post_meta($post->ID, 'valor_locacao_visivel', true) == '1') { ?>
+                                                    <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;">
+                                                        <strong>R$
+                                                            <?php echo $valor_locacao; ?></strong></h5>
+                                                <?php } else { ?>
+                                                    <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;">
+                                                        <strong>Consulte Valores</strong>
+                                                    </h5>
+                                                <?php }
+                                            } ?>
 
-                                        <?php if (!is_null($valor_temporada) && $temporada > 0) {
-                                            if (get_post_meta($post->ID, 'valor_temporada_visivel', true) == '1') { ?>
-                                                <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><strong>R$
-                                                        <?php echo $valor_temporada; ?></strong></h5>
-                                            <?php } else { ?>
-                                                <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;">
-                                                    <strong>Consulte Valores</strong>
-                                                </h5>
-                                            <?php }
-                                        } ?>
-                                        <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
-                                                class="fas fa-map-marker-alt"></i>
-                                            <strong><?php echo esc_html($endereco_complemento); ?></strong>
-                                        </h5>
-                                        <?php if (!is_null($area_total) && $area_total > 0) { ?>
+                                            <?php if (!is_null($valor_temporada) && $temporada > 0) {
+                                                if (get_post_meta($post->ID, 'valor_temporada_visivel', true) == '1') { ?>
+                                                    <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;">
+                                                        <strong>R$
+                                                            <?php echo $valor_temporada; ?></strong></h5>
+                                                <?php } else { ?>
+                                                    <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;">
+                                                        <strong>Consulte Valores</strong>
+                                                    </h5>
+                                                <?php }
+                                            } ?>
                                             <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
-                                                    class="fas fa-vector-square"></i> <strong><?php echo $area_total; ?></strong>m²
+                                                    class="fas fa-map-marker-alt"></i>
+                                                <strong><?php echo esc_html($endereco_complemento); ?></strong>
                                             </h5>
-                                        <?php } else if (!is_null($area_util) && $area_util > 0) { ?>
+                                        </div>
+                                        <div
+                                            style="width:100%; display: grid;grid-template-columns: repeat(2, 1fr); gap: 5px; padding: 0px;">
+                                            <?php if (!is_null($area_total) && $area_total > 0) { ?>
                                                 <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
-                                                        class="fas fa-vector-square"></i> <strong><?php echo $area_util; ?></strong>m²
+                                                        class="fas fa-vector-square"></i>
+                                                    <strong><?php echo $area_total; ?></strong>m²
                                                 </h5>
-                                        <?php } ?>
-                                        <?php if (!is_null($dorms) && $dorms > 0) { ?>
-                                            <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
-                                                    class="fas fa-bed"></i> <strong><?php echo $dorms; ?> Quartos</strong></h5>
-                                        <?php } ?>
-                                        <?php if (!is_null($suites) && $suites > 0) { ?>
-                                            <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
-                                                    class="fas fa-door-open"></i> <strong><?php echo $suites; ?> Suítes</strong></h5>
-                                        <?php } ?>
-                                        <?php if (!is_null($banheiros) && $banheiros > 0) { ?>
-                                            <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
-                                                    class="fas fa-bath"></i> <strong><?php echo $banheiros; ?> Banheiros</strong>
-                                            </h5>
-                                        <?php } ?>
-                                        <?php if (!is_null($vagas) && $vagas > 0) { ?>
-                                            <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
-                                                    class="fas fa-car"></i> <strong><?php echo $vagas; ?> Vagas</strong></h5>
-                                        <?php } ?>
+                                            <?php } else if (!is_null($area_util) && $area_util > 0) { ?>
+                                                    <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
+                                                            class="fas fa-vector-square"></i>
+                                                        <strong><?php echo $area_util; ?></strong>m²
+                                                    </h5>
+                                            <?php } ?>
+                                            <?php if (!is_null($dorms) && $dorms > 0) { ?>
+                                                <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
+                                                        class="fas fa-bed"></i> <strong><?php echo $dorms; ?> Quartos</strong></h5>
+                                            <?php } ?>
+                                            <?php if (!is_null($suites) && $suites > 0) { ?>
+                                                <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
+                                                        class="fas fa-door-open"></i> <strong><?php echo $suites; ?> Suítes</strong>
+                                                </h5>
+                                            <?php } ?>
+                                            <?php if (!is_null($banheiros) && $banheiros > 0) { ?>
+                                                <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
+                                                        class="fas fa-bath"></i> <strong><?php echo $banheiros; ?>
+                                                        Banheiros</strong>
+                                                </h5>
+                                            <?php } ?>
+                                            <?php if (!is_null($vagas) && $vagas > 0) { ?>
+                                                <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
+                                                        class="fas fa-car"></i> <strong><?php echo $vagas; ?> Vagas</strong></h5>
+                                            <?php } ?>
+                                        </div>
                                     </div>
                                     <div
                                         style="width: 100%; background-color: black; text-transform: uppercase; color: white; text-align: center; margin: 0px!important; height: 70px; font-weight: bold; font-size: 20px;">
@@ -1256,7 +1270,7 @@ $query = new WP_Query($args);
 
     .texto-cima h2,
     .texto-cima div {
-        padding: 20px 30px;
+        padding: 19px 19px;
     }
 
     .grids4 {
