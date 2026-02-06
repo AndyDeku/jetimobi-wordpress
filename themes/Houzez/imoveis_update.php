@@ -161,47 +161,47 @@ foreach($str1 as $key=>$value)
 
  		$bairro_so = $value['endereco_bairro'];
 
- 		$bairro_comp = array( 'name' => 'Centro', 'slug' => 'centro-santa-maria', 'taxonomy' => 'property_area');
+ 		$bairro_comp = array( 'name' => 'Centro', 'slug' => 'centro-santa-maria', 'taxonomy' => 'area');
 
- 	 	$def_estado = wp_update_term('' , 'property_state', $value['endereco_estado']);
+ 	 	$def_estado = wp_update_term('' , 'estado', $value['endereco_estado']);
 
- 		$def_cidade = wp_update_term(null , 'property_city', $value['endereco_cidade']);
+ 		$def_cidade = wp_update_term(null , 'cidade', $value['endereco_cidade']);
 
- 		$your_term = get_term_by( 'slug', $bairro, 'property_area' );
+ 		$your_term = get_term_by( 'slug', $bairro, 'area' );
 
 		if ( false !== $your_term ) {
 
-		    $def_bairro = wp_update_term($your_term->term_id , 'property_area', $bairro_comp);
+		    $def_bairro = wp_update_term($your_term->term_id , 'area', $bairro_comp);
 
 		}
 
 		else {
 
-			$def_bairro = wp_insert_term($value['endereco_bairro'], 'property_area', array( 'slug' => $bairro));
+			$def_bairro = wp_insert_term($value['endereco_bairro'], 'area', array( 'slug' => $bairro));
 
 		}
 
- 		$get_estado = get_term_by( 'name', $value['endereco_estado'], 'property_state' );
+ 		$get_estado = get_term_by( 'name', $value['endereco_estado'], 'estado' );
 
- 		$get_cidade = get_term_by( 'name', $value['endereco_cidade'], 'property_city' );
+ 		$get_cidade = get_term_by( 'name', $value['endereco_cidade'], 'cidade' );
 
- 		$get_bairro = get_term_by( 'slug', $bairro, 'property_area' );
+ 		$get_bairro = get_term_by( 'slug', $bairro, 'area' );
 
- 		$salva_estado = wp_set_object_terms($postid, $value['endereco_estado'], 'property_state');
+ 		$salva_estado = wp_set_object_terms($postid, $value['endereco_estado'], 'estado');
 
- 		$salva_cidade = wp_set_object_terms($postid, $value['endereco_cidade'], 'property_city');
+ 		$salva_cidade = wp_set_object_terms($postid, $value['endereco_cidade'], 'cidade');
 
- 		$salva_bairro = wp_set_object_terms($postid, $get_bairro->term_id, 'property_area');
-
-
+ 		$salva_bairro = wp_set_object_terms($postid, $get_bairro->term_id, 'area');
 
 
 
- 		$assoc_estado = update_option( '_houzez_property_state_'.$get_estado->term_taxonomy_id, array('parent_country' => 'BR') );
 
- 		$assoc_cidade = update_option( '_houzez_property_city_'.$get_cidade->term_taxonomy_id, array('parent_state' => $value['endereco_estado']) );
 
- 		$assoc_bairro = update_option( '_houzez_property_area_'.$get_bairro->term_taxonomy_id, array('parent_city' => $value['endereco_cidade']) );
+ 		$assoc_estado = update_option( '_houzez_estado_'.$get_estado->term_taxonomy_id, array('parent_country' => 'BR') );
+
+ 		$assoc_cidade = update_option( '_houzez_cidade_'.$get_cidade->term_taxonomy_id, array('parent_state' => $value['endereco_estado']) );
+
+ 		$assoc_bairro = update_option( '_houzez_area_'.$get_bairro->term_taxonomy_id, array('parent_city' => $value['endereco_cidade']) );
 
 
 
@@ -257,11 +257,11 @@ foreach($str1 as $key=>$value)
 
  		update_post_meta($postid, 'fave_property_country', 'BR');
 
- 		update_post_meta($postid, 'fave_property_state', $value['endereco_estado']);
+ 		update_post_meta($postid, 'fave_estado', $value['endereco_estado']);
 
- 		update_post_meta($postid, 'fave_property_city', $value['endereco_cidade']);
+ 		update_post_meta($postid, 'fave_cidade', $value['endereco_cidade']);
 
- 		update_post_meta($postid, 'fave_property_area', $value['endereco_bairro']);
+ 		update_post_meta($postid, 'fave_area', $value['endereco_bairro']);
 
  		update_post_meta($postid, 'fave_property_zip', $value['endereco_cep']);
 

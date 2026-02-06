@@ -74,7 +74,7 @@ get_header(); ?>
             $vagas = get_post_meta($post->ID, 'garagens', true);
             $images = get_post_meta($post->ID, 'galeria_imagens', false);
             $endereco_complemento = get_post_meta($post->ID, 'endereco_complemento', true);
-            $terms = wp_get_post_terms($post->ID, 'property_city');
+            $terms = wp_get_post_terms($post->ID, 'cidade');
             $cidade = $description = $image_url =$city_slug = "";
             
             if (!empty($terms) && !is_wp_error($terms)) {
@@ -751,7 +751,7 @@ get_header(); ?>
                                         <div class="description">
                                             <h3><?php echo $cidade ?></h3>
                                             <p><?php echo $description ?></p>
-                                            <a class="ver-toggle" href="/property_city/<?php echo $city_slug ?>"><strong>VER LOCALIZAÇÃO</strong></a>
+                                            <a class="ver-toggle" href="/cidade/<?php echo $city_slug ?>"><strong>VER LOCALIZAÇÃO</strong></a>
                                         </div>
                                     </div>
                                 <?php } ?>

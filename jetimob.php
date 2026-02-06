@@ -587,9 +587,9 @@ if (!function_exists('custom_taxonomy_estado')) {
 	{
 
 		$labels = array(
-			'name' => _x('Estado', 'Taxonomy General Name', 'text_domain'),
-			'singular_name' => _x('Estado', 'Taxonomy Singular Name', 'text_domain'),
-			'menu_name' => __('Estado', 'text_domain'),
+			'name' => _x('Estados', 'Taxonomy General Name', 'text_domain'),
+			'singular_name' => _x('Estados', 'Taxonomy Singular Name', 'text_domain'),
+			'menu_name' => __('Estados', 'text_domain'),
 			'all_items' => __('Todos', 'text_domain'),
 			'parent_item' => __('Pai', 'text_domain'),
 			'parent_item_colon' => __('Pai:', 'text_domain'),
@@ -613,11 +613,12 @@ if (!function_exists('custom_taxonomy_estado')) {
 			'hierarchical' => true,
 			'public' => true,
 			'show_ui' => true,
+			'rewrite' => ['slug' => 'estado'],
 			'show_admin_column' => false,
 			'show_in_nav_menus' => false,
 			'show_tagcloud' => false,
 		);
-		register_taxonomy('property_state', array('imovel'), $args);
+		register_taxonomy('estado', array('imovel'), $args);
 
 	}
 	add_action('init', 'custom_taxonomy_estado', 0);
@@ -630,9 +631,9 @@ if (!function_exists('custom_taxonomy_cidade')) {
 	{
 
 		$labels = array(
-			'name' => _x('Cidade', 'Taxonomy General Name', 'text_domain'),
-			'singular_name' => _x('Cidade', 'Taxonomy Singular Name', 'text_domain'),
-			'menu_name' => __('Cidade', 'text_domain'),
+			'name' => _x('Cidades', 'Taxonomy General Name', 'text_domain'),
+			'singular_name' => _x('Cidades', 'Taxonomy Singular Name', 'text_domain'),
+			'menu_name' => __('Cidades', 'text_domain'),
 			'all_items' => __('Todos', 'text_domain'),
 			'parent_item' => __('Pai', 'text_domain'),
 			'parent_item_colon' => __('Pai:', 'text_domain'),
@@ -656,17 +657,18 @@ if (!function_exists('custom_taxonomy_cidade')) {
 			'hierarchical' => true,
 			'public' => true,
 			'show_ui' => true,
+			'rewrite' => ['slug' => 'cidade'],
 			'show_admin_column' => true,
 			'show_in_nav_menus' => true,
 			'show_tagcloud' => true,
 			'meta_box_cb' => 'post_categories_meta_box',
 		);
-		register_taxonomy('property_city', array('imovel'), $args);
+		register_taxonomy('cidade', array('imovel'), $args);
 
 	}
 	add_action('init', 'custom_taxonomy_cidade', 0);// Adiciona campo de URL no formulário de criação
 	// Campo no formulário de criação
-	add_action('property_city_add_form_fields', function ($taxonomy) {
+	add_action('cidade_add_form_fields', function ($taxonomy) {
 		?>
 		<div class="form-field term-group">
 			<label for="term-image-url"><?php _e('Imagem (URL)', 'text_domain'); ?></label>
@@ -677,7 +679,7 @@ if (!function_exists('custom_taxonomy_cidade')) {
 	});
 
 	// Campo no formulário de edição
-	add_action('property_city_edit_form_fields', function ($term, $taxonomy) {
+	add_action('cidade_edit_form_fields', function ($term, $taxonomy) {
 		$image_url = get_term_meta($term->term_id, 'term_image', true);
 		?>
 		<tr class="form-field term-group-wrap">
@@ -691,8 +693,8 @@ if (!function_exists('custom_taxonomy_cidade')) {
 	}, 10, 2);
 
 	// Salvar a URL
-	add_action('created_property_city', 'save_term_image_meta', 10, 2);
-	add_action('edited_property_city', 'save_term_image_meta', 10, 2);
+	add_action('created_cidade', 'save_term_image_meta', 10, 2);
+	add_action('edited_cidade', 'save_term_image_meta', 10, 2);
 
 	function save_term_image_meta($term_id, $tt_id)
 	{
@@ -710,9 +712,54 @@ if (!function_exists('custom_taxonomy_area')) {
 	{
 
 		$labels = array(
-			'name' => _x('Área', 'Taxonomy General Name', 'text_domain'),
-			'singular_name' => _x('Área', 'Taxonomy Singular Name', 'text_domain'),
-			'menu_name' => __('Área', 'text_domain'),
+			'name' => _x('Bairros', 'Taxonomy General Name', 'text_domain'),
+			'singular_name' => _x('Bairros', 'Taxonomy Singular Name', 'text_domain'),
+			'menu_name' => __('Bairros', 'text_domain'),
+			'all_items' => __('Todos', 'text_domain'),
+			'parent_item' => __('Pai', 'text_domain'),
+			'parent_item_colon' => __('Pai:', 'text_domain'),
+			'new_item_name' => __('Novo', 'text_domain'),
+			'add_new_item' => __('Adicionar', 'text_domain'),
+			'edit_item' => __('Editar', 'text_domain'),
+			'update_item' => __('Atualizar', 'text_domain'),
+			'view_item' => __('Ver item', 'text_domain'),
+			'separate_items_with_commas' => __('Separe os itens com virgulas', 'text_domain'),
+			'add_or_remove_items' => __('Adicione ou remova itens', 'text_domain'),
+			'choose_from_most_used' => __('Escolha entre os mais utilizados', 'text_domain'),
+			'popular_items' => __('Itens populares', 'text_domain'),
+			'search_items' => __('Pesquisar', 'text_domain'),
+			'not_found' => __('Nada encontrado', 'text_domain'),
+			'no_terms' => __('Sem itens', 'text_domain'),
+			'items_list' => __('Lista de itens', 'text_domain'),
+			'items_list_navigation' => __('Navegar nos itens', 'text_domain'),
+		);
+		$args = array(
+			'labels' => $labels,
+			'hierarchical' => true,
+			'public' => true,
+			'rewrite' => ['slug' => 'bairro'],
+			'show_ui' => true,
+			'show_admin_column' => false,
+			'show_in_nav_menus' => false,
+			'show_tagcloud' => false,
+		);
+		register_taxonomy('area', array('imovel'), $args);
+
+	}
+	add_action('init', 'custom_taxonomy_area', 0);
+
+}
+
+if (!function_exists('custom_taxonomy_contratos')) {
+
+	// Register Custom Taxonomy
+	function custom_taxonomy_contratos()
+	{
+
+		$labels = array(
+			'name' => _x('Tipo de Contratos', 'Taxonomy General Name', 'text_domain'),
+			'singular_name' => _x('Tipo de Contrato', 'Taxonomy Singular Name', 'text_domain'),
+			'menu_name' => __('Tipo de Contrato', 'text_domain'),
 			'all_items' => __('Todos', 'text_domain'),
 			'parent_item' => __('Pai', 'text_domain'),
 			'parent_item_colon' => __('Pai:', 'text_domain'),
@@ -736,17 +783,17 @@ if (!function_exists('custom_taxonomy_area')) {
 			'hierarchical' => true,
 			'public' => true,
 			'show_ui' => true,
+			'rewrite' => ['slug' => 'contrato'],
 			'show_admin_column' => false,
 			'show_in_nav_menus' => false,
 			'show_tagcloud' => false,
 		);
-		register_taxonomy('property_area', array('imovel'), $args);
+		register_taxonomy('contratos', array('imovel'), $args);
 
 	}
-	add_action('init', 'custom_taxonomy_area', 0);
+	add_action('init', 'custom_taxonomy_contratos', 0);
 
 }
-
 add_filter('single_template', 'jetimob_single_template', 50, 1);
 function jetimob_single_template($template)
 {

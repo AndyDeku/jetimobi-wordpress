@@ -52,7 +52,7 @@ foreach($str1 as $key=>$value) {
 
 			if (is_null($value['valor_venda']) && is_null($value['valor_locacao'])) {
 
-				$preco_imovel = "Consulte";
+				$preco_imovel = 0;
 
 			}
 
@@ -522,7 +522,7 @@ foreach($str1 as $key=>$value) {
 	 			update_post_meta($postid, 'property_lot_dimensions', $largura.' x '.$comprimento);
 	 		} 	
 
-	 		update_post_meta($postid, 'property_area_total', $value['area_total']);
+	 		update_post_meta($postid, 'area_total', $value['area_total']);
 
 	 		update_post_meta($postid, 'property_total_area', $value['rural_area_aravel']);
 

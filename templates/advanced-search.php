@@ -60,29 +60,29 @@
                     );
                 }
 
-                if (!empty($_REQUEST['property_area'])) {
+                if (!empty($_REQUEST['area'])) {
                     $tax_query[] = array(
-                        'taxonomy' => 'property_area',
+                        'taxonomy' => 'area',
                         'field' => 'slug',
-                        'terms' => (array) sanitize_text_field($_REQUEST['property_area']),
+                        'terms' => (array) sanitize_text_field($_REQUEST['area']),
                         'include_children' => true,
                     );
                 }
 
-                if (!empty($_REQUEST['property_city'])) {
+                if (!empty($_REQUEST['cidade'])) {
                     $tax_query[] = array(
-                        'taxonomy' => 'property_city',
+                        'taxonomy' => 'cidade',
                         'field' => 'slug',
-                        'terms' => (array) sanitize_text_field($_REQUEST['property_city']),
+                        'terms' => (array) sanitize_text_field($_REQUEST['cidade']),
                         'include_children' => true,
                     );
                 }
 
-                if (!empty($_REQUEST['property_state'])) {
+                if (!empty($_REQUEST['estado'])) {
                     $tax_query[] = array(
-                        'taxonomy' => 'property_state',
+                        'taxonomy' => 'estado',
                         'field' => 'slug',
-                        'terms' => (array) sanitize_text_field($_REQUEST['property_state']),
+                        'terms' => (array) sanitize_text_field($_REQUEST['estado']),
                         'include_children' => true,
                     );
                 }
@@ -209,9 +209,9 @@
                         $vagas = get_post_meta($post->ID, 'garagens', true);
                         $fifu_image_url = get_post_meta($post->ID, 'fifu_image_url', true);
                         $endereco_complemento = get_post_meta($post->ID, 'endereco_complemento', true);
-                        $bairro = wp_get_post_terms($post->ID, 'property_area', array('number' => 1));
-                        $cidade = wp_get_post_terms($post->ID, 'property_city', array('number' => 1));
-                        $estado = wp_get_post_terms($post->ID, 'property_state', array('number' => 1));
+                        $bairro = wp_get_post_terms($post->ID, 'area', array('number' => 1));
+                        $cidade = wp_get_post_terms($post->ID, 'cidade', array('number' => 1));
+                        $estado = wp_get_post_terms($post->ID, 'estado', array('number' => 1));
                         ?>
                         <div
                             class="fusion-layout-column fusion_builder_column fusion-builder-column-<?php echo $i ?> fusion_builder_column_1_2 1_2 fusion-flex-column imoveiscontent fusion-column-inner-bg-wrapper">

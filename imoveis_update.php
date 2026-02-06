@@ -74,22 +74,39 @@ foreach ($str1 as $key => $value) {
             //Tipo de negócio - compra ou venda
 
             if (is_null($value['valor_venda'])) {
-                $preco_venda = "Consulte";
+                $preco_venda = 0;
             } else {
-                $preco_venda = number_format($value['valor_venda'], 2, ',', '.');
+                $preco_venda = number_format($value['valor_venda'], 2, '.', '');
             }
 
             if (is_null($value['valor_locacao'])) {
-                $preco_locacao = "Consulte";
+                $preco_locacao = 0;
             } else {
-                $preco_venda = number_format($value['valor_locacao'], 2, ',', '.');
+                $preco_venda = number_format($value['valor_locacao'], 2, '.', '');
             }
 
 
             if (is_null($value['valor_temporada'])) {
-                $preco_temporada = "Consulte";
+                $preco_temporada = 0;
             } else {
-                $preco_venda = number_format($value['valor_temporada'], 2, ',', '.');
+                $preco_venda = number_format($value['valor_temporada'], 2, '.', '');
+            }
+
+            $contratos = array_filter(
+                array_map('trim', explode(',', $value['contrato']))
+            );
+            echo '<br><br>';
+            if (count($contratos) == 0) {
+                var_dump($value['contrato']);
+            } else {
+                var_dump($value['contrato']);
+            }
+            echo '<br><br>';
+            foreach ($contratos as $cont) {
+                if (!term_exists($cont, 'contratos')) {
+                    wp_insert_term($cont, 'contratos');
+                }
+                wp_set_object_terms($post->ID, $cont, 'contratos', true);
             }
 
             if ($value['contrato'] == 'Compra') {
@@ -192,46 +209,46 @@ foreach ($str1 as $key => $value) {
 
             $bairro_comp = array('name' => 'Centro', 'slug' => 'centro', 'taxonomy' => 'imovel_area');
 
-            $def_estado = wp_update_term('', 'property_state', $value['endereco_estado']);
+            $def_estado = wp_update_term('', 'estado', $value['endereco_estado']);
 
-            $def_cidade = wp_update_term(null, 'property_city', $value['endereco_cidade']);
+            $def_cidade = wp_update_term(null, 'cidade', $value['endereco_cidade']);
 
-            $your_term = get_term_by('name', $bairro_so, 'property_area');
+            $your_term = get_term_by('name', $bairro_so, 'area');
 
             if (false !== $your_term) {
 
-                $def_bairro = wp_update_term($your_term->term_id, 'property_area', $bairro_comp);
+                $def_bairro = wp_update_term($your_term->term_id, 'area', $bairro_comp);
 
             } else {
 
-                $def_bairro = wp_insert_term($value['endereco_bairro'], 'property_area', array('slug' => $bairro_so));
+                $def_bairro = wp_insert_term($value['endereco_bairro'], 'area', array('slug' => $bairro_so));
 
             }
 
-            $get_estado = get_term_by('name', $value['endereco_estado'], 'property_state');
+            $get_estado = get_term_by('name', $value['endereco_estado'], 'estado');
 
-            $get_cidade = get_term_by('name', $value['endereco_cidade'], 'property_city');
+            $get_cidade = get_term_by('name', $value['endereco_cidade'], 'cidade');
 
-            $get_bairro = get_term_by('name', $bairro_so, 'property_area');
+            $get_bairro = get_term_by('name', $bairro_so, 'area');
 
-            $salva_estado = wp_set_object_terms($post->ID, $value['endereco_estado'], 'property_state');
+            $salva_estado = wp_set_object_terms($post->ID, $value['endereco_estado'], 'estado');
 
-            $salva_cidade = wp_set_object_terms($post->ID, $value['endereco_cidade'], 'property_city');
+            $salva_cidade = wp_set_object_terms($post->ID, $value['endereco_cidade'], 'cidade');
 
-            $salva_bairro = wp_set_object_terms($post->ID, $bairro_so, 'property_area');
+            $salva_bairro = wp_set_object_terms($post->ID, $bairro_so, 'area');
 
 
             // Associa estado (só se encontrou o termo)
             if ($get_bairro && !is_wp_error($get_bairro)) {
                 update_option(
-                    '_houzez_property_area_' . $get_bairro->term_taxonomy_id,
+                    '_houzez_area_' . $get_bairro->term_taxonomy_id,
                     array('parent_country' => 'BR')
                 );
             }
             // Associa estado (só se encontrou o termo)
             if ($get_estado && !is_wp_error($get_estado)) {
                 update_option(
-                    '_houzez_property_state_' . $get_estado->term_taxonomy_id,
+                    '_houzez_estado_' . $get_estado->term_taxonomy_id,
                     array('parent_country' => 'BR')
                 );
             }
@@ -268,14 +285,14 @@ foreach ($str1 as $key => $value) {
             }
 
             if (!$get_cidade) {
-                $created = wp_insert_term($value['endereco_cidade'], 'property_city');
+                $created = wp_insert_term($value['endereco_cidade'], 'cidade');
 
                 if (!is_wp_error($created)) {
                     $term_id = $created['term_id'];
                     $tax_id = $created['term_taxonomy_id'];
                     wp_update_term(
                         $term_id,
-                        'property_city',
+                        'cidade',
                         array('description' => sanitize_text_field($descricaocidade))
                     );
 
@@ -290,12 +307,12 @@ foreach ($str1 as $key => $value) {
             }
 
             if (!empty($tax_id)) {
-                $assoc_cidade = update_option('_houzez_property_city_' . $tax_id, array(
+                $assoc_cidade = update_option('_houzez_cidade_' . $tax_id, array(
                     'parent_state' => $value['endereco_estado']
                 ));
             }
             if ($get_bairro && !is_wp_error($get_bairro)) {
-                $assoc_bairro = update_option('_houzez_property_area_' . $get_bairro->term_taxonomy_id, array('parent_city' => $value['endereco_cidade']));
+                $assoc_bairro = update_option('_houzez_area_' . $get_bairro->term_taxonomy_id, array('parent_city' => $value['endereco_cidade']));
             }
             $query2 = "
 
