@@ -76,20 +76,20 @@ foreach ($str1 as $key => $value) {
             if (is_null($value['valor_venda'])) {
                 $preco_venda = 0;
             } else {
-                $preco_venda = number_format($value['valor_venda'], 2, '.', '');
+                $preco_venda = floatval($value['valor_venda']);
             }
 
             if (is_null($value['valor_locacao'])) {
                 $preco_locacao = 0;
             } else {
-                $preco_venda = number_format($value['valor_locacao'], 2, '.', '');
+                $preco_locacao = floatval($value['valor_locacao']);
             }
 
 
             if (is_null($value['valor_temporada'])) {
                 $preco_temporada = 0;
             } else {
-                $preco_venda = number_format($value['valor_temporada'], 2, '.', '');
+                $preco_temporada = floatval($value['valor_temporada']);
             }
 
             $contratos = array_filter(

@@ -55,6 +55,16 @@ foreach ($str1 as $key => $value) {
         //contrato e preço
         //Tipo de negócio - compra ou venda
 
+        $contratos = array_filter(
+            array_map('trim', explode(',', $value['contrato']))
+        );
+
+        foreach ($contratos as $cont) {
+            if (!term_exists($cont, 'contratos')) {
+                wp_insert_term($cont, 'contratos');
+            }
+            wp_set_object_terms($post->ID, $cont, 'contratos', true);
+        }
         if ($value['contrato'] == 'Compra') {
             $venda = true;
             $aluguel = false;
@@ -95,7 +105,7 @@ foreach ($str1 as $key => $value) {
             if (is_null($value['valor_locacao'])) {
                 $preco_locacao = 0;
             } else {
-                $preco_venda = $value['valor_locacao'];
+                $preco_locacao = $value['valor_locacao'];
             }
         }
 
@@ -103,7 +113,7 @@ foreach ($str1 as $key => $value) {
             if (is_null($value['valor_temporada'])) {
                 $preco_temporada = 0;
             } else {
-                $preco_venda = $value['valor_temporada'];
+                $preco_temporada = $value['valor_temporada'];
             }
         }
 

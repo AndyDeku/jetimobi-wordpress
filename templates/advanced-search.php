@@ -222,17 +222,17 @@
                                     <div class="col-text-1">
                                         <h2 style="color:white; margin-top: 0; margin-bottom: 10px; text-align: right;"><strong><?php if (!is_null($valor_venda) && $venda > 0)
                                             if (get_post_meta($post->ID, 'valor_venda_visivel', true) == '1')
-                                                echo "R$ " . $valor_venda;
+                                                echo "R$ " . number_format($valor_venda, 2, ',', '.');
                                             else
                                                 echo "Consulte Valores";
                                         else if (!is_null($valor_locacao) && $locacao > 0)
                                             if (get_post_meta($post->ID, 'valor_locacao_visivel', true) == '1')
-                                                echo "R$ " . $valor_locacao;
+                                                echo "R$ " . number_format($valor_locacao, 2, ',', '.');
                                             else
                                                 echo "Consulte Valores";
                                         else if (!is_null($valor_temporada) && $temporada > 0)
                                             if (get_post_meta($post->ID, 'valor_temporada_visivel', true) == '1')
-                                                echo "R$ " . $valor_temporada;
+                                                echo "R$ " . number_format($valor_temporada, 2, ',', '.');
                                             else
                                                 echo "Consulte Valores";
                                         else

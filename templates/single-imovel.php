@@ -289,7 +289,7 @@ get_header(); ?>
                                 <?php if (!is_null($valor_venda) && $venda > 0) {
                                     if (get_post_meta($post->ID, 'valor_venda_visivel', true) == '1') { ?>
                                         <h5 class="title-heading-left" style="margin:0;color:#000000; text-align: right;">
-                                            <?php echo $valor_venda; ?>
+                                            <?php echo number_format($valor_venda, 2, ',', '.'); ?>
                                         </h5>
                                     <?php } else { ?>
                                         <h5 class="title-heading-left" style="margin:0;color:#000000; text-align: right;">
@@ -300,7 +300,7 @@ get_header(); ?>
                                 <?php if (!is_null($valor_locacao) && $locacao > 0) {
                                     if (get_post_meta($post->ID, 'valor_locacao_visivel', true) == '1') { ?>
                                         <h5 class="title-heading-left" style="margin:0;color:#000000; text-align: right;">
-                                            <?php echo $valor_locacao; ?>
+                                            <?php echo number_format($valor_locacao, 2, ',', '.'); ?>
                                         </h5>
                                     <?php } else { ?>
                                         <h5 class="title-heading-left" style="margin:0;color:#000000; text-align: right;">
@@ -312,7 +312,7 @@ get_header(); ?>
                                 <?php if (!is_null($valor_temporada) && $temporada > 0) {
                                     if (get_post_meta($post->ID, 'valor_temporada_visivel', true) == '1') { ?>
                                         <h5 class="title-heading-left" style="margin:0;color:#000000; text-align: right;">
-                                            <?php echo $valor_temporada; ?>
+                                            <?php echo number_format($valor_temporada, 2, ',', '.'); ?>
                                         </h5>
                                     <?php } else { ?>
                                         <h5 class="title-heading-left" style="margin:0;color:#000000; text-align: right;">
