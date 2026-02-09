@@ -1,11 +1,23 @@
 <?php
 get_header();
-$tax_query = array('relation' => 'AND');
-$meta_query = array('relation' => 'AND');
+$tax_query = [];
+$meta_query = [];
+
 
 // -------------------------
 // TAXONOMIAS
 // -------------------------
+$form = '/imovel';
+$contratos = get_query_var('contratos'); // /contrato/compra
+if (!empty($contratos)) {
+    $tax_query[] = array(
+        'taxonomy' => 'contratos',
+        'field' => 'slug',
+        'terms' => (array) sanitize_text_field($contratos),
+    );
+
+    $form = '/contrato/' . sanitize_title($contratos);
+}
 $tipo_imovel = get_query_var('tipo_imovel'); // /tipo_imovel/apartamento
 if (!empty($tipo_imovel)) {
     $tax_query[] = array(
@@ -46,22 +58,22 @@ if (!empty($estado)) {
     );
 }
 
-$comodidade_imovel = get_query_var('imovel_comodidades'); // /imovel_comodidades/elevador
-if (!empty($comodidade_imovel)) {
+$imovel_comodidades = get_query_var('imovel_comodidades'); // /imovel_comodidades/elevador
+if (!empty($imovel_comodidades)) {
     $tax_query[] = array(
         'taxonomy' => 'imovel_comodidades',
         'field' => 'slug',
-        'terms' => (array) sanitize_text_field($comodidade_imovel),
+        'terms' => (array) sanitize_text_field($imovel_comodidades),
         'operator' => 'AND',
     );
 }
 
-$comodidade_condominio = get_query_var('condominio_comodidades'); // /condominio_comodidades/piscina
-if (!empty($comodidade_condominio)) {
+$condominio_comodidades = get_query_var('condominio_comodidades'); // /condominio_comodidades/piscina
+if (!empty($condominio_comodidades)) {
     $tax_query[] = array(
         'taxonomy' => 'condominio_comodidades',
         'field' => 'slug',
-        'terms' => (array) sanitize_text_field($comodidade_condominio),
+        'terms' => (array) sanitize_text_field($condominio_comodidades),
         'operator' => 'AND',
     );
 }
@@ -120,6 +132,67 @@ if (!empty($banheiros)) {
         'compare' => '=',
         'type' => 'NUMERIC',
     );
+}
+$valores = $_REQUEST['valores'];
+
+if (!empty($valores)) {
+    if ($valores == 'Até R$ 500 mil') {
+        $valor_min = 1;
+        $valor_max = 500001;
+    } else if ($valores == 'De R$ 501 mil até R$ 1 MI') {
+        $valor_min = 500002;
+        $valor_max = 1000999;
+    } else if ($valores == 'De R$ 1 MI a R$ 5 MI') {
+        $valor_min = 1001000;
+        $valor_max = 5000999;
+    } else {
+        $valor_min = 5000999;
+        $valor_max = 0;
+    }
+    if ($valor_max > 0)
+        $meta_query[] = array(
+            'relation' => 'OR',
+            array(
+                'key' => 'valor_venda',
+                'value' => [$valor_min, $valor_max],
+                'compare' => 'BETWEEN',
+                'type' => 'NUMERIC',
+            ),
+            array(
+                'key' => 'valor_temporada',
+                'value' => [$valor_min, $valor_max],
+                'compare' => 'BETWEEN',
+                'type' => 'NUMERIC',
+            ),
+            array(
+                'key' => 'valor_locacao',
+                'value' => [$valor_min, $valor_max],
+                'compare' => 'BETWEEN',
+                'type' => 'NUMERIC',
+            ),
+        );
+    else
+        $meta_query[] = array(
+            'relation' => 'OR',
+            array(
+                'key' => 'valor_venda',
+                'value' => $valor_min,
+                'compare' => '>=',
+                'type' => 'NUMERIC',
+            ),
+            array(
+                'key' => 'valor_temporada',
+                'value' => $valor_min,
+                'compare' => '>=',
+                'type' => 'NUMERIC',
+            ),
+            array(
+                'key' => 'valor_locacao',
+                'value' => $valor_min,
+                'compare' => '>=',
+                'type' => 'NUMERIC',
+            ),
+        );
 }
 
 $garagens = get_query_var('garagens'); // /vagas/1
@@ -204,20 +277,20 @@ if (!empty($_REQUEST['estado'])) {
     );
 }
 
-if (!empty($_REQUEST['comodidade_imovel'])) {
+if (!empty($_REQUEST['imovel_comodidades'])) {
     $tax_query[] = array(
-        'taxonomy' => 'comodidade_imovel',
+        'taxonomy' => 'imovel_comodidades',
         'field' => 'slug',
-        'terms' => array_map('sanitize_text_field', (array) $_REQUEST['comodidade_imovel']),
+        'terms' => array_map('sanitize_text_field', (array) $_REQUEST['imovel_comodidades']),
         'operator' => 'AND',
     );
 }
 
-if (!empty($_REQUEST['comodidade_condominio'])) {
+if (!empty($_REQUEST['condominio_comodidades'])) {
     $tax_query[] = array(
-        'taxonomy' => 'comodidade_condominio',
+        'taxonomy' => 'condominio_comodidades',
         'field' => 'slug',
-        'terms' => array_map('sanitize_text_field', (array) $_REQUEST['comodidade_condominio']),
+        'terms' => array_map('sanitize_text_field', (array) $_REQUEST['condominio_comodidades']),
         'operator' => 'AND',
     );
 }
@@ -325,19 +398,20 @@ if (!empty($_REQUEST['valor_min']) && !empty($_REQUEST['valor_max'])) {
 
 $args = array(
     'post_type' => array('imovel'),
-    'post_status' => array('published'),
+    'post_status' => 'publish',
     'nopaging' => false,
-    'posts_per_page' => '28',
+    'posts_per_page' => 28,
     'order' => 'DESC',
-    'orderby' => 'id',
+    'orderby' => 'ID',
 );
 // Só adiciona se tiver algo
-if (count($tax_query) > 1) {
-    $args['tax_query'] = $tax_query;
+if (!empty($tax_query)) {
+    $args['tax_query'] = array_merge(['relation' => 'AND'], $tax_query);
 }
-if (count($meta_query) > 1) {
-    $args['meta_query'] = $meta_query;
+if (!empty($meta_query)) {
+    $args['meta_query'] = array_merge(['relation' => 'AND'], $meta_query);
 }
+
 function create_taxonomy_select($taxonomy, $name, $placeholder = 'Selecione', $multiple = false)
 {
     $terms = get_terms([
@@ -409,6 +483,7 @@ function create_meta_select($key, $name, $options, $placeholder = 'Selecione')
 $dormitorios_options = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 $suites_options = [1, 2, 3, 4, 5];
 $banheiros_options = [1, 2, 3, 4, 5];
+$valores_options = ['Até R$ 500 mil', 'De R$ 501 mil até R$ 1 MI', 'De R$ 1 MI a R$ 5 MI', 'Acima de R$ 5 MI'];
 $vagas_options = [1, 2, 3, 4, 5];
 // The Query
 $query = new WP_Query($args);
@@ -437,6 +512,91 @@ $query = new WP_Query($args);
         margin-right: calc((30px) / 10);
     }
 
+    .iconesimovel {
+        width: 30%;
+        padding: 5px !important;
+    }
+
+    .textoimovel {
+        width: 70%;
+        padding: 5px !important;
+    }
+
+    .textoimovel p {
+        margin-bottom: 0px;
+    }
+
+    .iconesimovel i {
+        font-size: 40px;
+    }
+
+    .icones {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+        padding: 0px !important;
+    }
+
+    @media only screen and (max-width:1120px) {
+        .iconesimovel {
+            width: 40%;
+            padding: 5px !important;
+        }
+
+        .textoimovel {
+            width: 60%;
+            padding: 5px !important;
+        }
+
+    }
+
+    @media only screen and (max-width:800px) {
+        .icones {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0px !important;
+        }
+        .iconesimovel {
+            width: 30%;
+            padding: 5px !important;
+        }
+
+        .textoimovel {
+            width: 70%;
+            padding: 5px !important;
+        }
+    }
+
+    @media only screen and (max-width:614px) {
+        .icones {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 5px;
+            padding: 0px !important;
+        }
+    }
+
+    @media only screen and (max-width:455px) {
+        .icones {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0px !important;
+        }
+
+        .iconesimovel {
+            width: 30%;
+            padding: 5px !important;
+        }
+
+        .textoimovel {
+            width: 70%;
+            padding: 5px !important;
+        }
+    }
     .prev,
     .next {
         width: 100px;
@@ -446,11 +606,35 @@ $query = new WP_Query($args);
         color: white;
         background-color: #e94e1a;
     }
+
     .fusion-page-title-bar .fusion-builder-row.fusion-row {
         display: none;
     }
-    .fusion-body .fusion-flex-container.fusion-builder-row-1{
-        padding-bottom: 0!important;
+
+    .fusion-body .fusion-flex-container.fusion-builder-row-1 {
+        padding-bottom: 0 !important;
+    }
+
+    input,
+    select,
+    textarea {
+        border: none !important;
+        border-bottom: 1px solid black !important;
+        background-color: transparent !important;
+        border-radius: 0px !important;
+    }
+
+    ::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #f4f5f2, #5c5c5c);
+        border-radius: 999px;
     }
 </style>
 
@@ -461,7 +645,7 @@ $query = new WP_Query($args);
     </span>
     <span class="updated rich-snippet-hidden"></span>
     <div class="post-content">
-        <form action="/imovel" method="get">
+        <form action="<?php echo $form ?>" method="get">
             <div class="fusion-fullwidth fullwidth-box fusion-builder-row-13 fusion-flex-container nonhundred-percent-fullwidth non-hundred-percent-height-scrolling"
                 style="background-color: rgba(255,255,255,0);background-position: center center;background-repeat: no-repeat;border-width: 0px 0px 0px 0px;border-color:#e2e2e2;border-style:solid;">
                 <div class="fusion-builder-row fusion-row fusion-flex-align-items-flex-start"
@@ -470,7 +654,7 @@ $query = new WP_Query($args);
                         class="fusion-layout-column fusion_builder_column fusion-builder-column-01 fusion_builder_column_1_4 1_4 fusion-flex-column">
                         <div class="fusion-column-wrapper fusion-flex-justify-content-flex-start fusion-content-layout-column"
                             style="background-position: left top; background-repeat: no-repeat; background-size: cover; padding: 0px; min-height: 0px;">
-                            <label>Tipo de Imóvel
+                            <label>
                                 <?php
                                 create_taxonomy_select('tipo_imovel', 'tipo_imovel', 'Tipo de Imóvel');
                                 ?>
@@ -521,7 +705,7 @@ $query = new WP_Query($args);
                         class="fusion-layout-column fusion_builder_column fusion-builder-column-02 fusion_builder_column_1_4 1_4 fusion-flex-column">
                         <div class="fusion-column-wrapper fusion-flex-justify-content-flex-start fusion-content-layout-column"
                             style="background-position: left top; background-repeat: no-repeat; background-size: cover; padding: 0px; min-height: 0px;">
-                            <label>Bairro
+                            <label>
                                 <?php
                                 create_taxonomy_select('area', 'area', 'Bairro');
                                 ?>
@@ -572,7 +756,7 @@ $query = new WP_Query($args);
                         class="fusion-layout-column fusion_builder_column fusion-builder-column-03 fusion_builder_column_1_4 1_4 fusion-flex-column">
                         <div class="fusion-column-wrapper fusion-flex-justify-content-flex-start fusion-content-layout-column"
                             style="background-position: left top; background-repeat: no-repeat; background-size: cover; padding: 0px; min-height: 0px;">
-                            <label>Cidade
+                            <label>
                                 <?php
                                 create_taxonomy_select('cidade', 'cidade', 'Cidade');
                                 ?>
@@ -623,7 +807,7 @@ $query = new WP_Query($args);
                         class="fusion-layout-column fusion_builder_column fusion-builder-column-04 fusion_builder_column_1_4 1_4 fusion-flex-column">
                         <div class="fusion-column-wrapper fusion-flex-justify-content-flex-start fusion-content-layout-column"
                             style="background-position: left top; background-repeat: no-repeat; background-size: cover; padding: 0px; min-height: 0px;">
-                            <label>Estado
+                            <label>
                                 <?php
                                 create_taxonomy_select('estado', 'estado', 'Estado');
                                 ?>
@@ -675,7 +859,7 @@ $query = new WP_Query($args);
                         class="fusion-layout-column fusion_builder_column fusion-builder-column-07 fusion_builder_column_1_4 1_4 fusion-flex-column">
                         <div class="fusion-column-wrapper fusion-flex-justify-content-flex-start fusion-content-layout-column"
                             style="background-position: left top; background-repeat: no-repeat; background-size: cover; padding: 0px; min-height: 0px;">
-                            <label>Quartos
+                            <label>
                                 <?php
                                 create_meta_select('dormitorios', 'dormitorios', $dormitorios_options, 'Quartos');
                                 ?>
@@ -726,7 +910,7 @@ $query = new WP_Query($args);
                         class="fusion-layout-column fusion_builder_column fusion-builder-column-08 fusion_builder_column_1_4 1_4 fusion-flex-column">
                         <div class="fusion-column-wrapper fusion-flex-justify-content-flex-start fusion-content-layout-column"
                             style="background-position: left top; background-repeat: no-repeat; background-size: cover; padding: 0px; min-height: 0px;">
-                            <label>Suítes
+                            <label>
                                 <?php
                                 create_meta_select('suites', 'suites', $suites_options, 'Suítes');
                                 ?>
@@ -777,9 +961,9 @@ $query = new WP_Query($args);
                         class="fusion-layout-column fusion_builder_column fusion-builder-column-09 fusion_builder_column_1_4 1_4 fusion-flex-column">
                         <div class="fusion-column-wrapper fusion-flex-justify-content-flex-start fusion-content-layout-column"
                             style="background-position: left top; background-repeat: no-repeat; background-size: cover; padding: 0px; min-height: 0px;">
-                            <label>Banheiros
+                            <label>
                                 <?php
-                                create_meta_select('banheiros', 'banheiros', $banheiros_options, 'Banheiros');
+                                create_meta_select('valores', 'valores', $valores_options, 'Valor do Imovel');
                                 ?>
                             </label>
                         </div>
@@ -828,7 +1012,7 @@ $query = new WP_Query($args);
                         class="fusion-layout-column fusion_builder_column fusion-builder-column-010 fusion_builder_column_1_4 1_4 fusion-flex-column">
                         <div class="fusion-column-wrapper fusion-flex-justify-content-flex-start fusion-content-layout-column"
                             style="background-position: left top; background-repeat: no-repeat; background-size: cover; padding: 0px; min-height: 0px;">
-                            <label>Vagas de Garagem
+                            <label>
                                 <?php
                                 create_meta_select('garagens', 'garagens', $vagas_options, 'Vagas');
                                 ?>
@@ -909,7 +1093,7 @@ $query = new WP_Query($args);
                                     class="fusion-button button-flat fusion-button-default-size button-default button-1 fusion-button-span-yes fusion-button-default-type"
                                     target="_self" href="#"><i class="fa-search fas button-icon-left"
                                         aria-hidden="true"></i><span
-                                        class="fusion-button-text">Pesquiisar</span></button>
+                                        class="fusion-button-text">Pesquisar</span></button>
                             </div>
                         </div>
                     </div>
@@ -966,6 +1150,88 @@ $query = new WP_Query($args);
                 </style>
             </div>
         </form>
+        <div class="fusion-fullwidth fullwidth-box fusion-builder-row-800 fusion-flex-container nonhundred-percent-fullwidth non-hundred-percent-height-scrolling"
+            style="background-color: rgba(255,255,255,0);background-position: center center;background-repeat: no-repeat;border-width: 0px 0px 0px 0px;border-color:#e2e2e2;border-style:solid;">
+            <div class="fusion-builder-row fusion-row fusion-flex-align-items-flex-start"
+                style="max-width:100%;margin-left: calc(-4% / 2 );margin-right: calc(-4% / 2 );">
+                <div
+                    class="fusion-layout-column fusion_builder_column fusion-builder-column-0 fusion_builder_column_1_1 1_1 fusion-flex-column">
+                    <div class="fusion-column-wrapper fusion-flex-justify-content-flex-start fusion-content-layout-column"
+                        style="background-position: left top; background-repeat: no-repeat; background-size: cover; padding: 0px; min-height: 0px;">
+                        <style type="text/css">
+                            @media only screen and (max-width:1024px) {
+                                .fusion-title.fusion-title-800 {
+                                    margin-top: 10px !important;
+                                    margin-bottom: 15px !important;
+                                }
+                            }
+
+                            @media only screen and (max-width:640px) {
+                                .fusion-title.fusion-title-800 {
+                                    margin-top: 10px !important;
+                                    margin-bottom: 10px !important;
+                                }
+                            }
+                        </style>
+                        <div class="fusion-title title fusion-title-800 fusion-sep-none fusion-title-text fusion-title-size-three fusion-border-below-title"
+                            style="margin-top:10px;margin-bottom:15px;">
+                            <h3 class="title-heading-left" style="margin:0;"><?php echo $query->found_posts ?> IMOVEIS
+                                ENCONTRADOS</h3>
+                        </div>
+                    </div>
+                </div>
+                <style type="text/css">
+                    .fusion-body .fusion-builder-column-0 {
+                        width: 100% !important;
+                        margin-top: 0px;
+                        margin-bottom: 20px;
+                    }
+
+                    .fusion-builder-column-0>.fusion-column-wrapper {
+                        padding-top: 0px !important;
+                        padding-right: 0px !important;
+                        margin-right: 1.92%;
+                        padding-bottom: 0px !important;
+                        padding-left: 0px !important;
+                        margin-left: 1.92%;
+                    }
+
+                    @media only screen and (max-width:1024px) {
+                        .fusion-body .fusion-builder-column-0 {
+                            width: 100% !important;
+                            order: 0;
+                        }
+
+                        .fusion-builder-column-0>.fusion-column-wrapper {
+                            margin-right: 1.92%;
+                            margin-left: 1.92%;
+                        }
+                    }
+
+                    @media only screen and (max-width:640px) {
+                        .fusion-body .fusion-builder-column-0 {
+                            width: 100% !important;
+                            order: 0;
+                        }
+
+                        .fusion-builder-column-0>.fusion-column-wrapper {
+                            margin-right: 1.92%;
+                            margin-left: 1.92%;
+                        }
+                    }
+                </style>
+            </div>
+            <style type="text/css">
+                .fusion-body .fusion-flex-container.fusion-builder-row-800 {
+                    padding-top: 0px;
+                    margin-top: 0px;
+                    padding-right: 0px;
+                    padding-bottom: 0px;
+                    margin-bottom: 0px;
+                    padding-left: 0px;
+                }
+            </style>
+        </div>
         <div class="fusion-fullwidth fullwidth-box fusion-builder-row-6 fusion-flex-container hundred-percent-fullwidth non-hundred-percent-height-scrolling"
             style="background-color: rgba(255,255,255,0);background-position: center center;background-repeat: no-repeat;border-width: 0px 0px 0px 0px;border-color:#e2e2e2;border-style:solid;">
             <div class="fusion-builder-row fusion-row fusion-flex-align-items-flex-start"
@@ -1001,12 +1267,16 @@ $query = new WP_Query($args);
                         $vagas = get_post_meta($post->ID, 'garagens', true);
                         $fifu_image_url = get_post_meta($post->ID, 'fifu_image_url', true);
                         $endereco_complemento = get_post_meta($post->ID, 'endereco_complemento', true);
-                        $bairro = wp_get_post_terms($post->ID, 'area', array('number' => 1));
+                        $bairros = wp_get_post_terms($post->ID, 'area', array('number' => 1));
+                        $bairro = '';
+                        if (!is_wp_error($bairros) && !empty($bairros)) {
+                            $bairro = reset($bairros); // pega o primeiro
+                        }
                         $cidade = wp_get_post_terms($post->ID, 'cidade', array('number' => 1));
                         $estado = wp_get_post_terms($post->ID, 'estado', array('number' => 1));
                         ?>
                         <div
-                            class="fusion-layout-column fusion_builder_column fusion-builder-column-<?php echo $i ?> fusion_builder_column_1_2 1_2 fusion-flex-column imoveiscontent fusion-column-inner-bg-wrapper">
+                            class="fusion-layout-column fusion_builder_column fusion-builder-column-<?php echo $i ?> fusion_builder_column_1_3 1_3 fusion-flex-column imoveiscontent fusion-column-inner-bg-wrapper">
                             <div class="fusion-column-wrapper fusion-flex-justify-content-flex-end fusion-content-layout-column"
                                 style="padding: 20px 30px; min-height: 0px;" data-bg-url="<?php echo $fifu_image_url ?>">
                                 <div class="fusion-text fusion-text-1"
@@ -1050,7 +1320,8 @@ $query = new WP_Query($args);
                                                 if (get_post_meta($post->ID, 'valor_venda_visivel', true) == '1') { ?>
                                                     <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;">
                                                         <strong>R$
-                                                            <?php echo number_format($valor_venda, 2, ',', '.'); ?></strong></h5>
+                                                            <?php echo number_format($valor_venda, 2, ',', '.'); ?></strong>
+                                                    </h5>
                                                 <?php } else { ?>
                                                     <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;">
                                                         <strong>Consulte Valores</strong>
@@ -1061,7 +1332,8 @@ $query = new WP_Query($args);
                                                 if (get_post_meta($post->ID, 'valor_locacao_visivel', true) == '1') { ?>
                                                     <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;">
                                                         <strong>R$
-                                                            <?php echo number_format($valor_locacao, 2, ',', '.'); ?></strong></h5>
+                                                            <?php echo number_format($valor_locacao, 2, ',', '.'); ?></strong>
+                                                    </h5>
                                                 <?php } else { ?>
                                                     <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;">
                                                         <strong>Consulte Valores</strong>
@@ -1073,55 +1345,83 @@ $query = new WP_Query($args);
                                                 if (get_post_meta($post->ID, 'valor_temporada_visivel', true) == '1') { ?>
                                                     <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;">
                                                         <strong>R$
-                                                            <?php echo number_format($valor_temporada, 2, ',', '.'); ?></strong></h5>
+                                                            <?php echo number_format($valor_temporada, 2, ',', '.'); ?></strong>
+                                                    </h5>
                                                 <?php } else { ?>
                                                     <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;">
                                                         <strong>Consulte Valores</strong>
                                                     </h5>
                                                 <?php }
                                             } ?>
-                                            <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
-                                                    class="fas fa-map-marker-alt"></i>
-                                                <strong><?php echo esc_html($endereco_complemento); ?></strong>
-                                            </h5>
                                         </div>
-                                        <div
-                                            style="width:100%; display: grid;grid-template-columns: repeat(2, 1fr); gap: 5px; padding: 0px;">
+                                        <div class="icones">
+                                            <h5
+                                                style="color: black;width: 100%;margin-top: 0;margin-bottom: 15px;display: flex;flex-wrap: wrap;width: 100%;align-items: center;">
+                                                <div class="iconesimovel">
+                                                    <i class="fas fa-map-marker-alt"></i>
+                                                </div>
+                                                <div class="textoimovel">
+                                                    <p><strong><?php echo esc_html($bairro->name); ?></strong></p>
+                                                    <p>Bairro</p>
+                                                </div>
+                                            </h5>
                                             <?php if (!is_null($area_total) && $area_total > 0) { ?>
-                                                <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
-                                                        class="fas fa-vector-square"></i>
-                                                    <strong><?php echo $area_total; ?></strong>m²
+                                                <h5
+                                                    style="color: black;width: 100%;margin-top: 0;margin-bottom: 15px;display: flex;flex-wrap: wrap;width: 100%;align-items: center;">
+
+                                                    <div class="iconesimovel">
+                                                        <i class="fas fa-vector-square"></i>
+                                                    </div>
+                                                    <div class="textoimovel">
+                                                        <p><strong><?php echo $area_total; ?></strong>m²</p>
+                                                        <p>Área Total</p>
+                                                    </div>
                                                 </h5>
                                             <?php } else if (!is_null($area_util) && $area_util > 0) { ?>
-                                                    <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
-                                                            class="fas fa-vector-square"></i>
-                                                        <strong><?php echo $area_util; ?></strong>m²
+                                                    <h5
+                                                        style="color: black;width: 100%;margin-top: 0;margin-bottom: 15px;display: flex;flex-wrap: wrap;width: 100%;align-items: center;">
+
+                                                        <div class="iconesimovel">
+
+                                                            <i class="fas fa-vector-square"></i>
+                                                        </div>
+                                                        <div class="textoimovel">
+                                                            <p><strong><?php echo $area_util; ?></strong>m²</p>
+                                                            <p>Área Util</p>
+                                                        </div>
                                                     </h5>
                                             <?php } ?>
                                             <?php if (!is_null($dorms) && $dorms > 0) { ?>
-                                                <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
-                                                        class="fas fa-bed"></i> <strong><?php echo $dorms; ?> Quartos</strong></h5>
+                                                <h5
+                                                    style="color: black;width: 100%;margin-top: 0;margin-bottom: 15px;display: flex;flex-wrap: wrap;width: 100%;align-items: center;">
+                                                    <div class="iconesimovel">
+                                                        <i class="fas fa-bed"></i>
+                                                    </div>
+                                                    <div class="textoimovel">
+                                                        <p> <strong><?php echo $dorms; ?></strong></p>
+                                                        <p>Quartos</p>
+                                                    </div>
+                                                </h5>
                                             <?php } ?>
                                             <?php if (!is_null($suites) && $suites > 0) { ?>
-                                                <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
-                                                        class="fas fa-door-open"></i> <strong><?php echo $suites; ?> Suítes</strong>
+                                                <h5
+                                                    style="color: black;width: 100%;margin-top: 0;margin-bottom: 15px;display: flex;flex-wrap: wrap;width: 100%;align-items: center;">
+
+                                                    <div class="iconesimovel">
+                                                        <i class="fas fa-door-open"></i>
+                                                    </div>
+                                                    <div class="textoimovel">
+                                                        <p><strong><?php echo $suites; ?></strong>
+                                                        </p>
+                                                        <p>Suítes</p>
+                                                    </div>
                                                 </h5>
-                                            <?php } ?>
-                                            <?php if (!is_null($banheiros) && $banheiros > 0) { ?>
-                                                <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
-                                                        class="fas fa-bath"></i> <strong><?php echo $banheiros; ?>
-                                                        Banheiros</strong>
-                                                </h5>
-                                            <?php } ?>
-                                            <?php if (!is_null($vagas) && $vagas > 0) { ?>
-                                                <h5 style="color: black; width: 100%; margin-top: 0; margin-bottom: 15px;"><i
-                                                        class="fas fa-car"></i> <strong><?php echo $vagas; ?> Vagas</strong></h5>
                                             <?php } ?>
                                         </div>
                                     </div>
                                     <div
                                         style="width: 100%; background-color: black; text-transform: uppercase; color: white; text-align: center; margin: 0px!important; height: 70px; font-weight: bold; font-size: 20px;">
-                                        Ver Detalhes +</h4>
+                                        VER + DETALHES</h4>
                                     </div>
                                 </div>
                             </div>
@@ -1135,7 +1435,7 @@ $query = new WP_Query($args);
                         </div>
                         <style type="text/css">
                             .fusion-body .fusion-builder-column-<?php echo $i ?> {
-                                width: 50% !important;
+                                width: 33.333333333333% !important;
                                 margin-top: 0px;
                                 margin-bottom: 20px;
                             }
@@ -1245,11 +1545,11 @@ $query = new WP_Query($args);
     }
 
     .col-text-1 {
-        width: 40%;
+        width: 50%;
     }
 
     .col-text-2 {
-        width: 45%;
+        width: 50%;
     }
 
     @media only screen and (max-width:1520px) {

@@ -11,6 +11,21 @@ get_header(); ?>
         padding-top: 0 !important;
         padding-right: 0 !important;
     }
+    input, select, textarea{
+        border: none!important;
+        border-bottom: 1px solid black!important;
+        background-color: transparent!important;
+        color: black!important;
+        border-radius: 0px!important;
+    }
+    input::placeholder { color: black; }
+    input::-webkit-input-placeholder { color: black; }
+    input:-ms-input-placeholder { color: black; }
+    input::-ms-input-placeholder { color: black; }
+    textarea::placeholder { color: black!important; }
+    textarea::-webkit-input-placeholder { color: black!important; }
+    textarea:-ms-input-placeholder { color: black!important; }
+    textarea::-ms-input-placeholder { color: black!important; }
 
     .post-content {
         display: flex;
@@ -177,7 +192,7 @@ get_header(); ?>
                                             }
                                         </style>
                                         <a class="fusion-button button-flat fusion-button-default-size button-custom button-1 fusion-button-default-span fusion-button-default-type"
-                                            target="_self" href="https://novo.jarvisimoveis.com.br/imovel"><i
+                                            target="_self" href="/imovel"><i
                                                 class="fa-angle-left fas" aria-hidden="true"></i></a>
                                     </div>
                                     <div>
@@ -407,26 +422,50 @@ get_header(); ?>
 
                                         <?php if (!is_null($dorms) && $dorms > 0) { ?>
                                             <li style="margin-left: 10px; margin-right: 10px;"
-                                                title="<?php echo $dorms; ?> Quartos"><i class="fas fa-bed"></i>
-                                                <strong><?php echo $dorms; ?></strong>
+                                                title="<?php echo $dorms; ?> Quartos">
+                                                <div>
+                                                    <i class="fas fa-bed"></i>
+                                                </div>
+                                                <div>
+                                                    <p><strong><?php echo $dorms; ?></strong></p>
+                                                    <p>Quartos</p>
+                                                </div>
                                             </li>
                                         <?php } ?>
                                         <?php if (!is_null($suites) && $suites > 0) { ?>
                                             <li style="margin-left: 10px; margin-right: 10px;"
-                                                title="<?php echo $suites; ?> Suítes"><i class="fas fa-door-open"></i>
-                                                <strong><?php echo $suites; ?></strong>
+                                                title="<?php echo $suites; ?> Suítes">
+                                                <div>
+                                                    <i class="fas fa-door-open"></i>
+                                                </div>
+                                                <div>
+                                                    <p><strong><?php echo $suites; ?></strong></p>
+                                                    <p>Suítes</p>
+                                                </div>
                                             </li>
                                         <?php } ?>
                                         <?php if (!is_null($banheiros) && $banheiros > 0) { ?>
                                             <li style="margin-left: 10px; margin-right: 10px;"
-                                                title="<?php echo $banheiros ?> Banheiros"><i class="fas fa-bath"></i>
-                                                <strong><?php echo $banheiros ?></strong>
+                                                title="<?php echo $banheiros ?> Banheiros">
+                                                <div>
+                                                    <i class="fas fa-bath"></i>
+                                                </div>
+                                                <div>
+                                                    <p><strong><?php echo $banheiros; ?></strong></p>
+                                                    <p>Banheiros</p>
+                                                </div>
                                             </li>
                                         <?php } ?>
                                         <?php if (!is_null($vagas) && $vagas > 0) { ?>
                                             <li style="margin-left: 10px; margin-right: 10px;"
-                                                title="<?php echo $vagas; ?> Vagas de Garagem"><i class="fas fa-car"></i>
-                                                <strong><?php echo $vagas; ?></strong>
+                                                title="<?php echo $vagas; ?> Vagas de Garagem">
+                                                <div>
+                                                    <i class="fas fa-car"></i>
+                                                </div>
+                                                <div>
+                                                    <p><strong><?php echo $vagas; ?></strong></p>
+                                                    <p>Vagas</p>
+                                                </div>
                                             </li>
                                         <?php } ?>
                                     </ul>
@@ -814,7 +853,7 @@ get_header(); ?>
                             }
                         }
 
-                        @media only screen and (max-width:640px) {
+                        @media only screen and (max-width:820px) {
                             .imgcidade {
                                 width: 100%;
                                 border-top-left-radius: 10px;
@@ -840,7 +879,7 @@ get_header(); ?>
                     <div
                         class="fusion-layout-column fusion_builder_column fusion-builder-column-3<?php echo $j ?> formulariocontato fusion_builder_column_1_3 1_3 fusion-flex-column">
                         <div class="fusion-column-wrapper fusion-flex-justify-content-flex-start fusion-content-layout-column"
-                            style="background-position: left top; background-repeat: no-repeat; background-size: cover; background-color: rgba(233, 78, 26, 0.74); border-radius: 10px; overflow: hidden; padding: 20px 30px 30px 20px; min-height: 0px;">
+                            style="background-position: left top; background-repeat: no-repeat; background-size: cover; background-color: transparent; border-radius: 10px; overflow: hidden; padding: 20px 30px 30px 20px; min-height: 0px;">
                             <style type="text/css">
                                 @media only screen and (max-width:1024px) {
                                     .fusion-title.fusion-title-3<?php echo $j ?> {
@@ -859,7 +898,7 @@ get_header(); ?>
                             <div class="fusion-title title fusion-title-3<?php echo $j ?> fusion-sep-none fusion-title-text fusion-title-size-four fusion-border-below-title"
                                 style="margin-top:10px;margin-bottom:15px;">
                                 <h4 class="title-heading-left md-text-align-center sm-text-align-center"
-                                    style="margin:0;color:#ffffff;">
+                                    style="margin:0;color:black;">
                                     <div class="body-lg flex items-center font-headline font-bold text-blue-150">Deseja
                                         saber mais?
                                     </div>
@@ -925,9 +964,8 @@ get_header(); ?>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <p><input class="wpcf7-form-control wpcf7-submit has-spinner w-100"
-                                                    type="submit" value="ENVIAR" style="background: white; color: rgba(233, 78, 26); width: 100%;"><span class="wpcf7-spinner"
-                                                    style="background: white; color: rgba(233, 78, 26); width: 100%;"></span>
+                                            <p><button class="wpcf7-form-control wpcf7-submit has-spinner w-100"
+                                                    type="submit" value="" style="color: white; background: rgba(233, 78, 26); width: 100%;">ENVIAR</button>
                                             </p>
                                         </div>
                                     </div>
@@ -969,7 +1007,7 @@ get_header(); ?>
                             }
                         }
 
-                        @media only screen and (max-width:640px) {
+                        @media only screen and (max-width:820px) {
                             .fusion-body .fusion-builder-column-3<?php echo $j ?> {
                                 width: 100% !important;
                                 order: 0;
@@ -1032,7 +1070,8 @@ get_header(); ?>
                                 <?php } ?>
                                 <?php if ($geopos_visivel == 2) { ?>
                                     <div class="fusion-text fusion-text-1"
-                                        style="transform:translate3d(0,0,0); padding-left: 30px; padding-right: 30px;">
+                                        style="transform:translate3d(0,0,0); padding-left: 30px; padding-right: 30px;"
+                                        id="localizacao">
                                         <h3 style="">Localização</h3>
                                         <h5 style="color: black; width: 100%; margin-top: 0;"><i
                                                 class="fas fa-map-marker-alt"></i>
@@ -1258,6 +1297,9 @@ get_header(); ?>
                             border-radius: 10px;
                         }
 
+                        .area i{
+                            font-size: 40px;
+                        }
                         .area i,
                         .area div {
                             width: 100%;
@@ -1275,7 +1317,8 @@ get_header(); ?>
                             gap: 20px;
                             list-style-type: none;
                             padding: 0;
-                            width: 30%;
+                            width: 60%;
+                            margin-top: 0px;
                         }
 
                         .detalhe {
@@ -1294,11 +1337,19 @@ get_header(); ?>
 
                         .lidetalhe li i {
                             margin-right: 5px;
+                            font-size: 40px;
+                        }
+                        .lidetalhe li div{
+                            width: 50%;
+                        }
+                        .lidetalhe li p{
+                            margin-bottom: 0!important;
+                            line-height: 1;
                         }
 
                         @media only screen and (max-width:983px) {
-                            .lidetalhe {
-                                width: 40%;
+                            .lidetalhe, .grids2 {
+                                width: 100%;
                             }
                         }
 
@@ -1307,10 +1358,9 @@ get_header(); ?>
                             .lidetalhe li, .grids li {
                                 width: 100%;
                             }
-
                             .grids,
                             .areas,
-                            .grids2 {
+                            {
                                 display: flex;
                                 flex-wrap: wrap;
                                 width: 100%;
@@ -1323,6 +1373,17 @@ get_header(); ?>
 
                         @media only screen and (max-width:640px) {
 
+                            .lidetalhe li div:first-child{
+                                width: 20%;
+                            }
+                            .lidetalhe li div:last-child{
+                                width: 80%;
+                            }
+                            .grids2,  .lidetalhe  {
+                                display: flex;
+                                flex-wrap: wrap;
+                                width: 100%;
+                            }
                             .lidetalhe li,
                             .lidetalhe,
                             .button-fotos {

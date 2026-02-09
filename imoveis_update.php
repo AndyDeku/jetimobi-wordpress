@@ -254,34 +254,35 @@ foreach ($str1 as $key => $value) {
             }
             $descricaocidade = "";
             $img_id = 0;
-
+            $base = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http");
+            $base .= "://" . $_SERVER['HTTP_HOST'];
             if ($value['endereco_cidade'] == "Maceió") {
                 $descricaocidade = "Maceió, capital de Alagoas, é um dos destinos mais encantadores do Brasil. Conhecida como o “Caribe Brasileiro”, a cidade reúne praias de águas cristalinas, coqueirais e piscinas naturais que impressionam pela beleza. Além das paisagens, oferece rica cultura, gastronomia saborosa à base de frutos do mar e artesanato típico, como o bordado filé. Com orla estruturada, vida noturna animada e opções que vão do centro histórico às praias vizinhas, Maceió é o lugar ideal para viver momentos inesquecíveis entre natureza, cultura e hospitalidade.";
-                $img_id = "https://novo.jarvisimoveis.com.br/wp-content/uploads/2025/09/maceio.jpg";
+                $img_id = $base . "/wp-content/uploads/2025/09/maceio.jpg";
             } else if ($value['endereco_cidade'] == "Barra de Santo Antônio") {
                 $descricaocidade = "Localizada no litoral norte de Alagoas, a Barra de Santo Antônio encanta por suas praias de águas claras, recifes e paisagens preservadas. A mais famosa é a Praia de Carro Quebrado, conhecida por suas falésias coloridas e cenários de tirar o fôlego. Além das belezas naturais, o município mantém viva a cultura local, com festas tradicionais, culinária típica e a hospitalidade de sua gente. Com um ambiente tranquilo e acolhedor, a Barra de Santo Antônio é o destino perfeito para quem busca contato com a natureza e momentos de descanso em meio às maravilhas do litoral alagoano.";
-                $img_id = "https://novo.jarvisimoveis.com.br/wp-content/uploads/2025/09/barra-de-santo-antonio.webp";
+                $img_id = $base . "/wp-content/uploads/2025/09/barra-de-santo-antonio.webp";
             } else if ($value['endereco_cidade'] == "Barra de São Miguel") {
                 $descricaocidade = "A poucos quilômetros de Maceió, a Barra de São Miguel é um dos destinos mais procurados do litoral sul de Alagoas. Suas praias de águas mornas e cristalinas, protegidas por recifes, formam piscinas naturais ideais para banho e mergulho. Além disso, o município é ponto de partida para passeios inesquecíveis até a Praia do Gunga, famosa por seus coqueirais e falésias coloridas. Com ótima infraestrutura turística, gastronomia regional e clima acolhedor, a Barra de São Miguel é perfeita tanto para descanso quanto para aventuras em meio às paisagens paradisíacas do estado.";
-                $img_id = "https://novo.jarvisimoveis.com.br/wp-content/uploads/2025/09/barra-de-sao-miguel.webp";
+                $img_id = $base . "/wp-content/uploads/2025/09/barra-de-sao-miguel.webp";
             } else if ($value['endereco_cidade'] == "Japaratinga") {
                 $descricaocidade = "Vizinha de Maragogi, a charmosa Japaratinga conquista com praias tranquilas, piscinas naturais e paisagens preservadas. Suas águas claras e mornas são ideais para mergulho e passeios de jangada, enquanto o clima acolhedor do vilarejo transmite simplicidade e autenticidade. Com belezas naturais, boa gastronomia e uma atmosfera rústica e charmosa, Japaratinga é o destino perfeito para quem busca sossego em meio ao paraíso do litoral alagoano.";
-                $img_id = "https://novo.jarvisimoveis.com.br/wp-content/uploads/2025/09/Japaratinga.webp";
+                $img_id = $base . "/wp-content/uploads/2025/09/Japaratinga.webp";
             } else if ($value['endereco_cidade'] == "Marechal Deodoro") {
                 $descricaocidade = "Primeira capital de Alagoas, Marechal Deodoro reúne patrimônio histórico e belas praias. Suas ruas guardam igrejas e casarões coloniais, enquanto o litoral encanta com a Praia do Francês, uma das mais famosas do estado, além de lagoas e paisagens de rara beleza. Entre cultura, natureza e tradição, Marechal Deodoro é um destino que combina história e lazer em um só lugar.";
-                $img_id = "https://novo.jarvisimoveis.com.br/wp-content/uploads/2025/09/Marechal-Deodoro-1.jpg";
+                $img_id = $base . "/wp-content/uploads/2025/09/Marechal-Deodoro-1.jpg";
             } else if ($value['endereco_cidade'] == "Paripueira") {
                 $descricaocidade = "Localizada no litoral norte de Alagoas, Paripueira é famosa por suas piscinas naturais de águas mornas e cristalinas, formadas na maré baixa, ideais para mergulho e observação da vida marinha. Suas praias extensas e tranquilas oferecem um cenário perfeito para descanso, contato com a natureza e passeios de jangada. Com clima acolhedor e beleza preservada, Paripueira é um destino imperdível para quem busca sossego e paisagens encantadoras no litoral alagoano.";
-                $img_id = "https://novo.jarvisimoveis.com.br/wp-content/uploads/2025/09/Paripueira-1.jpg";
+                $img_id = $base . "/wp-content/uploads/2025/09/Paripueira-1.jpg";
             } else if ($value['endereco_cidade'] == "Passo de Camaragibe") {
                 $descricaocidade = "Às margens da Rota Ecológica, Passo de Camaragibe encanta com suas praias tranquilas, coqueirais e águas cristalinas. O destino é ideal para quem busca contato direto com a natureza, seja em passeios pelas praias quase desertas, mergulhos em piscinas naturais ou trilhas ecológicas. Com atmosfera rústica e acolhedora, o município preserva tradições culturais e oferece uma experiência autêntica em meio às belezas do litoral alagoano.";
-                $img_id = "https://novo.jarvisimoveis.com.br/wp-content/uploads/2025/09/Passo-de-Camaragibe.jpeg";
+                $img_id = $base . "/wp-content/uploads/2025/09/Passo-de-Camaragibe.jpeg";
             } else if ($value['endereco_cidade'] == "Porto de Pedras") {
                 $descricaocidade = "Localizado na Rota Ecológica, Porto de Pedras é um destino encantador do litoral norte de Alagoas. Suas praias tranquilas, rios e manguezais preservados oferecem cenários únicos para descanso e ecoturismo. O município também é ponto de acesso à famosa Praia do Patacho, uma das mais belas do Brasil. Com atmosfera rústica, gastronomia regional e contato direto com a natureza, Porto de Pedras é perfeito para quem busca tranquilidade e experiências autênticas à beira-mar.";
-                $img_id = "https://novo.jarvisimoveis.com.br/wp-content/uploads/2025/09/Porto-de-Pedras.jpg";
+                $img_id = $base . "/wp-content/uploads/2025/09/Porto-de-Pedras.jpg";
             } else if ($value['endereco_cidade'] == "São Miguel dos Milagres") {
                 $descricaocidade = "Na deslumbrante Rota Ecológica, São Miguel dos Milagres é um dos destinos mais encantadores do litoral norte de Alagoas. Com praias quase desertas, mar cristalino, piscinas naturais e jangadas coloridas, o vilarejo é perfeito para quem busca tranquilidade e contato com a natureza. Com pousadas charmosas, boa gastronomia e hospitalidade acolhedora, São Miguel dos Milagres oferece um cenário paradisíaco para dias de descanso inesquecíveis.";
-                $img_id = "https://novo.jarvisimoveis.com.br/wp-content/uploads/2025/09/Sao-Miguel-dos-Milagres.webp";
+                $img_id = $base . "/wp-content/uploads/2025/09/Sao-Miguel-dos-Milagres.webp";
             }
 
             if (!$get_cidade) {
@@ -384,10 +385,13 @@ foreach ($str1 as $key => $value) {
 
             update_post_meta($post->ID, 'id_corretor', $value['id_corretor']);
 
-            if ($value['destaque'] == "Em destaque") {
+            if ($value['destaque'] == "Destaque") {
 
                 update_post_meta($post->ID, 'destaque', 1);
 
+            } else {
+
+                update_post_meta($post->ID, 'destaque', 0);
             }
 
             //visualização no mapa
